@@ -78,8 +78,8 @@ class _LoginFormState extends State<LoginForm> {
                   borderRadius: BorderRadius.circular(20),
                   gradient: new LinearGradient(
                     colors: <Color>[
-                      const Color.fromRGBO(88, 39, 176, 0.5),
-                      const Color.fromRGBO(156, 39, 176, 0.6),
+                      Theme.of(context).primaryColor.withAlpha(125),
+                      Theme.of(context).colorScheme.primaryVariant.withAlpha(175),
                       const Color.fromRGBO(0, 0, 0, 0.7),
                     ],
                     stops: [0.1, 0.5, 1.0],

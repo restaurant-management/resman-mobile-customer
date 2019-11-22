@@ -55,6 +55,9 @@ class EditProfileForm extends StatefulWidget {
 }
 
 class EditProfileState extends State<EditProfileForm> {
+  List<String> _address;
+
+  String _value;
   String _name;
   String _email;
   String _oldAvatar;
@@ -69,6 +72,8 @@ class EditProfileState extends State<EditProfileForm> {
   @override
   void initState() {
     isSaving = false;
+    _address = [];
+    _value = null;
     _birthday = currentUser.birthday;
     _name = currentUser.fullName;
     _email = currentUser.email;
@@ -147,8 +152,8 @@ class EditProfileState extends State<EditProfileForm> {
             ),
             Stack(children: [
               Container(
-                width: 200.0,
-                height: 200.0,
+                width: 150.0,
+                height: 150.0,
                 padding: const EdgeInsets.all(4.0),
                 decoration: new BoxDecoration(
                   color: Theme.of(context).primaryColor,
@@ -261,6 +266,7 @@ class EditProfileState extends State<EditProfileForm> {
                             TextFormField(
                               initialValue: _email,
                               style: TextStyle(color: primaryColor),
+                              enabled: false,
                               decoration: InputDecoration(
                                   prefixIcon: Icon(
                                     Icons.mail,
@@ -290,6 +296,53 @@ class EditProfileState extends State<EditProfileForm> {
                                           TextStyle(color: primaryColor)),
                                 ),
                               ),
+                            ),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Container(
+                                  height: 45.0,
+                                  decoration: BoxDecoration(),
+                                  child: Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                        13, 15, 20, 15),
+                                    child: Icon(
+                                      Icons.pin_drop,
+                                      color: primaryColor,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    children: <Widget>[
+                                      Container(
+                                        height: 100,
+                                        child: SingleChildScrollView(
+                                          physics: BouncingScrollPhysics(),
+                                          child: Column(
+                                            children: _buildListAddress()
+                                          ),
+                                        ),
+                                      ),
+                                      CupertinoButton(
+                                        child: Icon(
+                                          Icons.add,
+                                          color: primaryColor,
+                                        ),
+                                        color: Colors.grey[300],
+                                        borderRadius: const BorderRadius.all(
+                                            Radius.circular(4.0)),
+                                        padding: const EdgeInsets.fromLTRB(
+                                            125, 0, 125, 0),
+                                        minSize: 0,
+                                        onPressed: () {
+                                          showAlertDialog();
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
                             SizedBox(
                               height: 8,
@@ -332,6 +385,69 @@ class EditProfileState extends State<EditProfileForm> {
         ),
       ),
     );
+  }
+
+  showAlertDialog() {
+    // set up the button
+    Widget saveButton = FlatButton(
+      child: Text("Save"),
+      onPressed: () {
+        setState(() {
+          _address.add(_value);
+        });
+        Navigator.pop(context);
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Add address"),
+      content: TextField(
+        autofocus: true,
+        onChanged: (value) {
+          _value = value;
+        },
+      ),
+      actions: [
+        saveButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  List<Widget> _buildListAddress() {
+    return _address.asMap().map((index, _value) => MapEntry(index, Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              child: Text(
+                _value,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            CupertinoButton(
+              padding: EdgeInsets.all(0),
+              minSize: 0,
+              child: Icon(Icons.indeterminate_check_box),
+              onPressed: () {
+                //TODO delete _address[index]
+                _address.removeAt(index);
+                setState(() {
+                });
+
+              },
+            ),
+          ],
+        ),
+      ))).values.toList();
   }
 
   Future<Null> _selectDate(BuildContext context) async {

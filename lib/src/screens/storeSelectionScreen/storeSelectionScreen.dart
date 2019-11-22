@@ -51,7 +51,7 @@ class _StoreSelectScreenState extends State<StoreSelectionScreen>
     Store(
       id: 234,
       name: 'XYZ',
-      logo: 'https://www.abcrestaurants.com/images/1000x0/kerst-25-dec.jpg',
+      logo: 'https://avatars2.githubusercontent.com/u/48937704?s=460&v=4',
       address: 'Q9',
       description: 'cơm ngon vl',
       hotline: '19000000',
