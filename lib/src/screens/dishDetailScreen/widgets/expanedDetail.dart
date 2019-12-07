@@ -52,12 +52,9 @@ class ExpandedDetailState extends State<ExpandedDetail> {
             });
           },
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: ExpandedSection(
-            child: child,
-            expand: expanded,
-          ),
+        ExpandedSection(
+          child: child,
+          expand: expanded,
         ),
       ],
     );

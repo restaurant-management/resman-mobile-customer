@@ -111,6 +111,7 @@ class _LoginFormState extends State<LoginForm> {
                         validator: (value) {
                           if (value.isEmpty)
                             return 'Vui lòng nhập thông tin vào trường này!';
+                          return null;
                         },
                       ),
                       Divider(color: Colors.transparent),
@@ -122,6 +123,7 @@ class _LoginFormState extends State<LoginForm> {
                         validator: (value) {
                           if (value.isEmpty)
                             return 'Vui lòng nhập thông tin vào trường này!';
+                          return null;
                         },
                       ),
                       Divider(color: Colors.transparent),

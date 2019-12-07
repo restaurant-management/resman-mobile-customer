@@ -38,7 +38,7 @@ class _PrimaryCartButtonState extends State<PrimaryCartButton> {
       },
       child: InkWell(
         onTap: () {
-          Scaffold.of(context).openDrawer();
+          Scaffold.of(context).openEndDrawer();
         },
         child: Stack(children: <Widget>[
           IconButton(

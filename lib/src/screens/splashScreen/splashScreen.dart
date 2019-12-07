@@ -21,6 +21,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     authenticationBloc = AuthenticationBloc();
+    authenticationBloc.dispatch(AppStarted());
     super.initState();
   }
 

@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:resman_mobile_customer/src/blocs/cartBloc/bloc.dart';
 import 'package:resman_mobile_customer/src/blocs/cartBloc/state.dart';
+import 'package:resman_mobile_customer/src/utils/gradientColor.dart';
 
 class SecondaryCartButton extends StatefulWidget {
   final Color color;
@@ -33,15 +34,21 @@ class _SecondaryCartButtonState extends State<SecondaryCartButton> {
       },
       child: InkWell(
         onTap: () {
-          Scaffold.of(context).openDrawer();
+          Scaffold.of(context).openEndDrawer();
         },
         child: Stack(children: <Widget>[
-          FloatingActionButton(
-            elevation: 10,
-            backgroundColor: Theme.of(context).primaryColor,
-            child: Icon(
-              Icons.shopping_cart,
-              color: widget.color != null ? widget.color : Colors.white,
+          Container(
+            decoration: BoxDecoration(
+              gradient: GradientColor.of(context).primaryGradient,
+              borderRadius: BorderRadius.circular(90),
+            ),
+            child: FloatingActionButton(
+              elevation: 10,
+              backgroundColor: Colors.transparent,
+              child: Icon(
+                Icons.shopping_cart,
+                color: widget.color != null ? widget.color : Colors.white,
+              ),
             ),
           ),
           Positioned(

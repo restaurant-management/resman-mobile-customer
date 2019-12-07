@@ -70,7 +70,7 @@ class BillItemState extends State<BillItem> {
                   children: <Widget>[
                     Card(
                       margin: EdgeInsets.all(0),
-                      color: Color.fromRGBO(88, 37, 176, 0.5),
+                      color: Theme.of(context).primaryColor.withAlpha(220),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(0),

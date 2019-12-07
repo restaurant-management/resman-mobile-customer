@@ -65,6 +65,7 @@ class ProfileScreenState extends State<ProfileScreen> {
               pinned: true,
               title: OutlineText(
                 color: primaryColor,
+                textColor: Theme.of(context).colorScheme.onPrimary,
                 text: user.fullName ?? user.username,
               ),
               centerTitle: true,

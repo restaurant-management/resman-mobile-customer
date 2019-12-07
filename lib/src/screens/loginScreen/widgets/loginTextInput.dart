@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:resman_mobile_customer/src/utils/textStyles.dart';
 
 class LoginTextInput extends StatelessWidget {
   final String hint;
@@ -10,12 +11,14 @@ class LoginTextInput extends StatelessWidget {
   final TextInputType keyboardType;
   final VoidCallback onEditingComplete;
 
-  LoginTextInput({this.hint,
-    this.obscure,
-    this.icon,
-    this.validator,
-    this.controller,
-    this.keyboardType, this.onEditingComplete});
+  LoginTextInput(
+      {this.hint,
+      this.obscure,
+      this.icon,
+      this.validator,
+      this.controller,
+      this.keyboardType,
+      this.onEditingComplete});
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +37,8 @@ class LoginTextInput extends StatelessWidget {
         ),
         contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
         hintText: hint,
-        hintStyle: TextStyle(color: Colors.white70),
+        hintStyle: TextStyles.h4
+            .merge(TextStyle(color: Theme.of(context).hintColor)),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(32),
         ),

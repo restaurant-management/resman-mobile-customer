@@ -20,6 +20,7 @@ class Store {
     this.closeTime,
     this.rating,
   });
+
 }
 class FakeStoreList{
   static final stores = [

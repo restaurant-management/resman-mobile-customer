@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -7,13 +9,13 @@ import 'package:resman_mobile_customer/src/blocs/currentUserBloc/bloc.dart';
 import 'package:resman_mobile_customer/src/blocs/currentUserBloc/event.dart';
 import 'package:resman_mobile_customer/src/blocs/currentUserBloc/state.dart';
 import 'package:resman_mobile_customer/src/enums/permission.dart';
-import 'package:resman_mobile_customer/src/fakeStoreList.dart';
 import 'package:resman_mobile_customer/src/models/userModel.dart';
-import 'package:resman_mobile_customer/src/screens/storeSelectionScreen/storeSelectionScreen.dart' show StoreSelectionScreen;
+import 'package:resman_mobile_customer/src/screens/storeSelectionScreen/storeSelectionScreen.dart'
+    show Store, StoreSelectionScreen;
 import 'package:resman_mobile_customer/src/widgets/errorIndicator.dart';
 import 'package:resman_mobile_customer/src/widgets/loadingIndicator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:http/http.dart' as http;
 import '../../blocs/authenticationBloc/bloc.dart';
 import '../../blocs/authenticationBloc/event.dart';
 import '../../blocs/authenticationBloc/state.dart';
@@ -22,7 +24,29 @@ import '../editProfileScreen/editPasswordScreen.dart';
 import '../editProfileScreen/editProfileScreen.dart';
 import '../loginScreen/loginScreen.dart';
 import 'profileScreen.dart';
+import 'package:resman_mobile_customer/src/models/storeModal.dart';
 
+Future<Store> getStoreDetail(int storeId) async {
+  print('Fetching...');
+  final response = await http
+      .get('http://resman-web-admin-api.herokuapp.com/api/stores/$storeId');
+
+  if (response.statusCode == 200) {
+    // If the call to the server was successful, parse the JSON.
+    // TODO map json.decode
+    return Store.fromJson(json.decode(response.body));
+  } else {
+    // If that call was not successful, throw an error.
+    String message;
+    try {
+      message = jsonDecode(response.body)['message'];
+    } catch (e) {
+      print('Error: $e');
+    }
+    if (message != null && message.isNotEmpty) throw Exception(message);
+    throw Exception('Tải thông tin cửa hàng thất bại.');
+  }
+}
 
 class ProfileDrawer extends StatefulWidget {
   final AuthenticationBloc authenticationBloc;
@@ -38,6 +62,7 @@ class ProfileDrawer extends StatefulWidget {
 class _ProfileDrawerState extends State<ProfileDrawer> {
   CurrentUserBloc _currentUserBloc = CurrentUserBloc();
   Widget storeLogo;
+  Future<Store> store;
 
   @override
   void initState() {
@@ -46,7 +71,24 @@ class _ProfileDrawerState extends State<ProfileDrawer> {
       width: 30,
       height: 30,
     );
-    _storeSelected();
+    SharedPreferences.getInstance().then((value) {
+      SharedPreferences prefs = value;
+      if (prefs.containsKey('store')) {
+        var storeId = prefs.getInt('store');
+        store = getStoreDetail(storeId);
+        store.then((value) {
+          setState(() {
+            storeLogo = CircleAvatar(
+              radius: 40,
+              backgroundImage: NetworkImage(value.logo),
+            );
+          });
+        }).catchError((e) {
+          print(e);
+        });
+      }
+    });
+
     super.initState();
   }
 
@@ -98,8 +140,18 @@ class _ProfileDrawerState extends State<ProfileDrawer> {
       children: <Widget>[
         Stack(children: <Widget>[
           UserAccountsDrawerHeader(
-            accountEmail: Text(user?.email ?? ''),
-            accountName: Text(user?.fullName ?? user?.username ?? ''),
+            accountEmail: Text(
+              user?.email ?? '',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.surface,
+              ),
+            ),
+            accountName: Text(
+              user?.fullName ?? user?.username ?? '',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.surface,
+              ),
+            ),
             currentAccountPicture: GestureDetector(
               onTap: () {},
               child: Container(
@@ -109,10 +161,9 @@ class _ProfileDrawerState extends State<ProfileDrawer> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                                ProfileScreen(
-                                  user: user,
-                                ),
+                            builder: (context) => ProfileScreen(
+                              user: user,
+                            ),
                           ),
                         );
                       }
@@ -122,14 +173,14 @@ class _ProfileDrawerState extends State<ProfileDrawer> {
                       child: ClipOval(
                         child: user?.avatar != null
                             ? FadeInImage.assetNetwork(
-                          placeholder: 'assets/images/default-avatar.jpg',
-                          fit: BoxFit.cover,
-                          image: user?.avatar,
-                        )
+                                placeholder: 'assets/images/default-avatar.jpg',
+                                fit: BoxFit.cover,
+                                image: user?.avatar,
+                              )
                             : Image.asset(
-                          'assets/images/default-avatar.jpg',
-                          fit: BoxFit.cover,
-                        ),
+                                'assets/images/default-avatar.jpg',
+                                fit: BoxFit.cover,
+                              ),
                       ),
                     ),
                   ),
@@ -137,9 +188,7 @@ class _ProfileDrawerState extends State<ProfileDrawer> {
                   height: 32.0,
                   padding: const EdgeInsets.all(2.0),
                   decoration: new BoxDecoration(
-                    color: Theme
-                        .of(context)
-                        .primaryColor, // border color
+                    color: Theme.of(context).primaryColor, // border color
                     shape: BoxShape.circle,
                   )),
             ),
@@ -156,25 +205,22 @@ class _ProfileDrawerState extends State<ProfileDrawer> {
             child: Container(
               child: Center(
                 child: InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => StoreSelectionScreen(),
-                        ),
-                      );
-                    },
-                    child: storeLogo,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => StoreSelectionScreen(),
+                      ),
+                    );
+                  },
+                  child: storeLogo,
                 ),
               ),
               width: 50.0,
               height: 50.0,
               padding: const EdgeInsets.all(0.0),
               decoration: new BoxDecoration(
-                color: Theme
-                    .of(context)
-                    .colorScheme
-                    .onPrimary, // border color
+                color: Theme.of(context).colorScheme.onPrimary, // border color
                 shape: BoxShape.circle,
               ),
             ),
@@ -184,26 +230,6 @@ class _ProfileDrawerState extends State<ProfileDrawer> {
             isAuth: user != null ? true : false),
       ],
     );
-  }
-
-  _storeSelected() async {
-    Store store;
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (prefs.containsKey('store')) {
-
-      var storeId = prefs.getInt('store');
-
-      store = FakeStoreList.stores.firstWhere((e){
-          return e.id == storeId;
-      });
-
-      setState(() {
-        storeLogo = CircleAvatar(
-          radius: 40,
-          backgroundImage: NetworkImage(store.logo),
-        );
-      });
-    }
   }
 
   List<Widget> _buildChangeAuthenticatedAndUnauthenticated(
@@ -223,8 +249,7 @@ class _ProfileDrawerState extends State<ProfileDrawer> {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) =>
-                        BillsScreen(
+                    builder: (context) => BillsScreen(
                           isMyBill: true,
                         )));
           },
@@ -256,8 +281,7 @@ class _ProfileDrawerState extends State<ProfileDrawer> {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) =>
-                        EditPasswordScreen(
+                    builder: (context) => EditPasswordScreen(
 //                      currentUser: user,
                         )));
           },
@@ -292,10 +316,9 @@ class _ProfileDrawerState extends State<ProfileDrawer> {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>
-                      LoginScreen(
-                        authenticationBloc: widget.authenticationBloc,
-                      ),
+                  builder: (context) => LoginScreen(
+                    authenticationBloc: widget.authenticationBloc,
+                  ),
                 ));
           },
         ),
@@ -313,10 +336,9 @@ class _ProfileDrawerState extends State<ProfileDrawer> {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>
-                      LoginScreen(
-                        authenticationBloc: widget.authenticationBloc,
-                      ),
+                  builder: (context) => LoginScreen(
+                    authenticationBloc: widget.authenticationBloc,
+                  ),
                 ));
           },
         ),

@@ -1,31 +1,56 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:resman_mobile_customer/src/constants/textStyles.dart';
+import 'package:http/http.dart' as http;
+import 'package:resman_mobile_customer/src/models/storeModal.dart';
 import 'package:resman_mobile_customer/src/screens/storeSelectionScreen/storeItem.dart';
+import 'package:resman_mobile_customer/src/widgets/AppBars/backAppBar.dart';
+
 import 'storeItem.dart';
 
-class Store {
-  final int id;
-  final String name;
-  final String logo;
-  final String address;
-  final String description;
-  final String hotline;
-  final DateTime openTime;
-  final DateTime closeTime;
-  final double rating;
+Future<Store> getListStoreDetail() async {
+  final response =
+      await http.get('http://resman-web-admin-api.herokuapp.com/api/stores/');
 
-  Store({
-    this.id,
-    this.name,
-    this.logo,
-    this.address,
-    this.description,
-    this.hotline,
-    this.openTime,
-    this.closeTime,
-    this.rating,
-  });
+  if (response.statusCode == 200) {
+    // If the call to the server was successful, parse the JSON.
+    // TODO map json.decode
+    return Store.fromJson(json.decode(response.body));
+  } else {
+    // If that call was not successful, throw an error.
+    String message;
+    try {
+      message = jsonDecode(response.body)['message'];
+    } catch (e) {
+      print('Error: $e');
+    }
+    if (message != null && message.isNotEmpty) throw Exception(message);
+    throw Exception('Tải thông tin cửa hàng thất bại.');
+  }
+}
+
+Future<List<Store>> getAll() async {
+  final response =
+      await http.get('http://resman-web-admin-api.herokuapp.com/api/stores/');
+  if (response.statusCode == 200) {
+    List<Store> result = [];
+    List<dynamic> list = jsonDecode(response.body);
+    for (int i = 0; i < list.length; i++) {
+      var store = Store.fromJson(list[i]);
+      result.add(store);
+    }
+    return result;
+  } else {
+    String message;
+    try {
+      message = jsonDecode(response.body)['message'];
+    } catch (e) {
+      print('Error: $e');
+    }
+    if (message != null && message.isNotEmpty) throw Exception(message);
+    throw Exception('Tải danh sách cửa hàng thất bại.');
+  }
 }
 
 class StoreSelectionScreen extends StatefulWidget {
@@ -35,76 +60,7 @@ class StoreSelectionScreen extends StatefulWidget {
 
 class _StoreSelectScreenState extends State<StoreSelectionScreen>
     with SingleTickerProviderStateMixin {
-  List<Store> stores = [
-
-    Store(
-      id: 123,
-      name: 'ABC',
-      logo: 'https://www.abcrestaurants.com/images/1000x0/kerst-25-dec.jpg',
-      address: 'Q9',
-      description: 'cơm ngon vl',
-      hotline: '19000000',
-      openTime: DateTime.now(),
-      closeTime: DateTime.now(),
-      rating: 4.9,
-    ),
-    Store(
-      id: 234,
-      name: 'XYZ',
-      logo: 'https://avatars2.githubusercontent.com/u/48937704?s=460&v=4',
-      address: 'Q9',
-      description: 'cơm ngon vl',
-      hotline: '19000000',
-      openTime: DateTime.now(),
-      closeTime: DateTime.now(),
-      rating: 4.9,
-    ),
-    Store(
-      id: 345,
-      name: 'UIT',
-      logo: 'https://www.abcrestaurants.com/images/1000x0/kerst-25-dec.jpg',
-      address: 'Q9',
-      description: 'cơm ngon vl',
-      hotline: '19000000',
-      openTime: DateTime.now(),
-      closeTime: DateTime.now(),
-      rating: 4.9,
-    ),
-    Store(
-      id: 456,
-      name: 'HPX',
-      logo: 'https://www.abcrestaurants.com/images/1000x0/kerst-25-dec.jpg',
-      address: 'Q9',
-      description: 'cơm ngon vl',
-      hotline: '19000000',
-      openTime: DateTime.now(),
-      closeTime: DateTime.now(),
-      rating: 4.9,
-    ),
-    Store(
-      id: 567,
-      name: 'AGK',
-      logo: 'https://www.abcrestaurants.com/images/1000x0/kerst-25-dec.jpg',
-      address: 'Q9',
-      description: 'cơm ngon vl',
-      hotline: '19000000',
-      openTime: DateTime.now(),
-      closeTime: DateTime.now(),
-      rating: 4.9,
-    ),
-    Store(
-      id: 678,
-      name: 'UKH',
-      logo: 'https://www.abcrestaurants.com/images/1000x0/kerst-25-dec.jpg',
-      address: 'Q9',
-      description: 'cơm ngon vl',
-      hotline: '19000000',
-      openTime: DateTime.now(),
-      closeTime: DateTime.now(),
-      rating: 4.9,
-    ),
-  ];
-
+  Future<List<Store>> stores;
   bool searchInputVisible;
   IconData actionIcon = Icons.search;
   String keyword;
@@ -113,67 +69,69 @@ class _StoreSelectScreenState extends State<StoreSelectionScreen>
   void initState() {
     this.searchInputVisible = false;
     super.initState();
+    stores = getAll();
   }
 
   @override
   Widget build(BuildContext context) {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      appBar: AppBar(
-        actions: <Widget>[
-          CupertinoButton(
-            child: Icon(
-              this.searchInputVisible ? Icons.close : Icons.search,
-              size: 24,
-              color: colorScheme.primary,
-            ),
-            onPressed: () {
-              this.setState(() {
-                searchInputVisible = !searchInputVisible;
-                keyword = null;
-              });
-            },
-          )
-        ],
-        backgroundColor: colorScheme.onPrimary,
-        title: Text(
-          'Mời chọn nhà hàng!',
-          style: TextStyles.h5Headline.merge(
-            TextStyle(color: colorScheme.primary, fontWeight: FontWeight.bold),
-          ),
-        ),
-        bottom: this.searchInputVisible
-            ? PreferredSize(
-                preferredSize: const Size.fromHeight(48.0),
-                child: TextField(
-                  onChanged: (value) {
-                    setState(() {
-                      keyword = value;
-                    });
-                  },
-                  style: TextStyle(color: colorScheme.primary),
-                  autofocus: true,
-                  decoration: InputDecoration(
-//              suffixIcon: Icon(
-//                Icons.search,
-//                color: colorScheme.primary,
-//              ),
-                    contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-                    hintText: 'Nhập từ khóa...',
-                    hintStyle:
-                        TextStyle(color: Color.fromRGBO(88, 37, 176, 0.8)),
-                  ),
-                ),
-              )
-            : PreferredSize(
-                preferredSize: Size.fromHeight(0),
-                child: Container(),
+        appBar: BackAppBar(
+          right: <Widget>[
+            CupertinoButton(
+              pressedOpacity: 1,
+              child: Icon(
+                this.searchInputVisible ? Icons.close : Icons.search,
+                size: 24,
+                color: Theme.of(context).colorScheme.onPrimary,
               ),
-        centerTitle: true,
-        elevation: 3,
-      ),
-      body: _buildSearchList(stores),
-    );
+              onPressed: () {
+                this.setState(() {
+                  searchInputVisible = !searchInputVisible;
+                  keyword = null;
+                });
+              },
+            )
+          ],
+          title: 'Mời chọn cửa hàng',
+          showShoppingCart: false,
+          bottom: this.searchInputVisible
+              ? PreferredSize(
+                  preferredSize: const Size.fromHeight(48.0),
+                  child: TextField(
+                    onChanged: (value) {
+                      setState(() {
+                        keyword = value;
+                      });
+                    },
+                    style: TextStyle(color: colorScheme.onPrimary),
+                    autofocus: true,
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+                      hintText: 'Nhập từ khóa...',
+                      hintStyle:
+                          TextStyle(color: colorScheme.onPrimary,),
+                    ),
+                  ),
+                )
+              : PreferredSize(
+                  preferredSize: Size.fromHeight(0),
+                  child: Container(),
+                ),
+        ),
+        body: Center(
+          child: FutureBuilder<List<Store>>(
+            future: stores,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return _buildSearchList(snapshot.data);
+              } else if (snapshot.hasError) {
+                return Text("${snapshot.error}");
+              }
+              return CircularProgressIndicator();
+            },
+          ),
+        ));
   }
 
   Widget _buildSearchList(List<Store> storeList) {

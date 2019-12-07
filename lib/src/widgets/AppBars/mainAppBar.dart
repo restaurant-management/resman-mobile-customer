@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:resman_mobile_customer/src/utils/gradientColor.dart';
 
 import '../../screens/searchScreen/searchScreen.dart';
 
@@ -14,31 +15,35 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = Theme.of(context).primaryColor;
+    final colorScheme = Theme.of(context).colorScheme;
     return AppBar(
-      backgroundColor: Colors.white,
+      flexibleSpace: Container(
+        decoration: BoxDecoration(
+          gradient: GradientColor.of(context).primaryGradient,
+        ),
+      ),
       elevation: 5,
       centerTitle: true,
       leading: IconButton(
         icon: Icon(
           Icons.menu,
-          color: primaryColor,
+          color: colorScheme.onPrimary,
         ),
-        onPressed: () => Scaffold.of(context).openEndDrawer(),
+        onPressed: () => Scaffold.of(context).openDrawer(),
       ),
       title: Hero(
         tag: 'HeroLogoImage',
         child: Text(
           'Res Man',
           style:
-              TextStyle(color: primaryColor, fontSize: 40, fontFamily: 'Rukola'),
+              TextStyle(color: colorScheme.onPrimary, fontSize: 40, fontFamily: 'Rukola'),
         ),
       ),
       actions: <Widget>[
         IconButton(
           icon: Icon(
             Icons.search,
-            color: Theme.of(context).primaryColor,
+            color: colorScheme.onPrimary,
           ),
           onPressed: () {
             Navigator.push(context,

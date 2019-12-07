@@ -108,9 +108,9 @@ class _DishesTodayScreenState extends State<DishesTodayScreen> {
             decoration: new BoxDecoration(
                 gradient: new LinearGradient(
               colors: <Color>[
-                const Color.fromRGBO(88, 39, 176, 0.7),
-                const Color.fromRGBO(88, 39, 176, 0.3),
-                const Color.fromRGBO(88, 39, 176, 0.0),
+                Theme.of(context).primaryColor.withAlpha(180),
+                Theme.of(context).primaryColor.withAlpha(80),
+                Theme.of(context).primaryColor.withAlpha(0),
               ],
               stops: [0.1, 0.7, 1.0],
               begin: Alignment.bottomCenter,

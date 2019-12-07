@@ -14,6 +14,8 @@ import 'package:resman_mobile_customer/src/blocs/editProfileBloc/bloc.dart';
 import 'package:resman_mobile_customer/src/blocs/editProfileBloc/event.dart';
 import 'package:resman_mobile_customer/src/blocs/editProfileBloc/state.dart';
 import 'package:resman_mobile_customer/src/models/userModel.dart';
+import 'package:resman_mobile_customer/src/utils/gradientColor.dart';
+import 'package:resman_mobile_customer/src/utils/textStyles.dart';
 import 'package:resman_mobile_customer/src/widgets/loadingIndicator.dart';
 
 import '../../widgets/AppBars/backAppBar.dart';
@@ -56,7 +58,7 @@ class EditProfileForm extends StatefulWidget {
 
 class EditProfileState extends State<EditProfileForm> {
   List<String> _address;
-
+  final _formKey = GlobalKey<FormState>();
   String _value;
   String _name;
   String _email;
@@ -66,6 +68,7 @@ class EditProfileState extends State<EditProfileForm> {
   bool isSaving;
   final _birthdayTextFieldController = new TextEditingController();
   final EditProfileBloc _editProfileBloc = EditProfileBloc();
+  double _height = 15;
 
   UserModel get currentUser => widget.currentUser;
 
@@ -109,6 +112,7 @@ class EditProfileState extends State<EditProfileForm> {
   @override
   Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).primaryColor;
+    final colorScheme = Theme.of(context).colorScheme;
     return BlocListener(
       bloc: _editProfileBloc,
       listener: (BuildContext context, state) {
@@ -184,7 +188,7 @@ class EditProfileState extends State<EditProfileForm> {
                   height: 60,
                   child: ClipOval(
                     child: RaisedButton(
-                      color: Color.fromRGBO(0, 0, 0, 0.3),
+                      color: Theme.of(context).primaryColor.withAlpha(80),
                       child: Icon(
                         Icons.edit,
                         color: Colors.white,
@@ -246,7 +250,7 @@ class EditProfileState extends State<EditProfileForm> {
                           children: <Widget>[
                             TextFormField(
                               initialValue: _name,
-                              style: TextStyle(color: primaryColor),
+                              style: TextStyle(color: colorScheme.onBackground),
                               decoration: InputDecoration(
                                 prefixIcon: Icon(
                                   Icons.contact_mail,
@@ -255,7 +259,8 @@ class EditProfileState extends State<EditProfileForm> {
                                 contentPadding:
                                     EdgeInsets.fromLTRB(20, 15, 20, 15),
                                 labelText: 'Họ và tên',
-                                labelStyle: TextStyle(color: primaryColor),
+                                labelStyle:
+                                    TextStyle(color: colorScheme.onBackground),
                               ),
                               onFieldSubmitted: (value) {
                                 setState(() {
@@ -265,7 +270,7 @@ class EditProfileState extends State<EditProfileForm> {
                             ),
                             TextFormField(
                               initialValue: _email,
-                              style: TextStyle(color: primaryColor),
+                              style: TextStyle(color: colorScheme.onBackground),
                               enabled: false,
                               decoration: InputDecoration(
                                   prefixIcon: Icon(
@@ -275,7 +280,8 @@ class EditProfileState extends State<EditProfileForm> {
                                   contentPadding:
                                       EdgeInsets.fromLTRB(20, 15, 20, 15),
                                   labelText: 'Email',
-                                  labelStyle: TextStyle(color: primaryColor)),
+                                  labelStyle: TextStyle(
+                                      color: colorScheme.onBackground)),
                             ),
                             GestureDetector(
                               onTap: () => _selectDate(context),
@@ -283,7 +289,8 @@ class EditProfileState extends State<EditProfileForm> {
                                 child: TextFormField(
                                   controller: _birthdayTextFieldController,
                                   enabled: false,
-                                  style: TextStyle(color: primaryColor),
+                                  style: TextStyle(
+                                      color: colorScheme.onBackground),
                                   decoration: InputDecoration(
                                       prefixIcon: Icon(
                                         Icons.calendar_today,
@@ -292,8 +299,8 @@ class EditProfileState extends State<EditProfileForm> {
                                       contentPadding:
                                           EdgeInsets.fromLTRB(20, 15, 20, 15),
                                       labelText: 'Ngày sinh',
-                                      labelStyle:
-                                          TextStyle(color: primaryColor)),
+                                      labelStyle: TextStyle(
+                                          color: colorScheme.onBackground)),
                                 ),
                               ),
                             ),
@@ -307,39 +314,47 @@ class EditProfileState extends State<EditProfileForm> {
                                     padding: const EdgeInsets.fromLTRB(
                                         13, 15, 20, 15),
                                     child: Icon(
-                                      Icons.pin_drop,
+                                      Icons.directions,
                                       color: primaryColor,
                                     ),
                                   ),
                                 ),
-                                Expanded(
-                                  child: Column(
-                                    children: <Widget>[
-                                      Container(
-                                        height: 100,
-                                        child: SingleChildScrollView(
-                                          physics: BouncingScrollPhysics(),
-                                          child: Column(
-                                            children: _buildListAddress()
+                                Container(
+                                  child: Expanded(
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
+                                      children: <Widget>[
+                                        AnimatedContainer(
+                                          height: _height,
+                                          duration: Duration(
+                                            milliseconds: 20,
+                                          ),
+                                          child: SingleChildScrollView(
+                                            physics: BouncingScrollPhysics(),
+                                            child: Column(
+                                                children: _buildListAddress()),
                                           ),
                                         ),
-                                      ),
-                                      CupertinoButton(
-                                        child: Icon(
-                                          Icons.add,
-                                          color: primaryColor,
+                                        CupertinoButton(
+                                          child: Icon(
+                                            Icons.add,
+                                            color: primaryColor,
+                                          ),
+                                          color: Colors.grey[300],
+                                          borderRadius: const BorderRadius.all(
+                                              Radius.circular(4.0)),
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 0, horizontal: 100),
+                                          minSize: 0,
+                                          onPressed: () {
+                                            _showModalBottomSheet();
+                                            _value = '';
+                                          },
                                         ),
-                                        color: Colors.grey[300],
-                                        borderRadius: const BorderRadius.all(
-                                            Radius.circular(4.0)),
-                                        padding: const EdgeInsets.fromLTRB(
-                                            125, 0, 125, 0),
-                                        minSize: 0,
-                                        onPressed: () {
-                                          showAlertDialog();
-                                        },
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ],
@@ -353,10 +368,12 @@ class EditProfileState extends State<EditProfileForm> {
                               gradient: LinearGradient(
                                 colors: <Color>[
                                   !isSaving
-                                      ? Color.fromRGBO(88, 39, 176, 1)
+                                      ? Theme.of(context).primaryColor
                                       : Color.fromRGBO(0, 0, 0, 0.3),
                                   !isSaving
-                                      ? Color.fromRGBO(0, 39, 176, 1)
+                                      ? Theme.of(context)
+                                          .colorScheme
+                                          .primaryVariant
                                       : Color.fromRGBO(0, 0, 0, 0.3),
                                 ],
                                 stops: [0.1, 1.0],
@@ -387,67 +404,145 @@ class EditProfileState extends State<EditProfileForm> {
     );
   }
 
-  showAlertDialog() {
-    // set up the button
-    Widget saveButton = FlatButton(
-      child: Text("Save"),
-      onPressed: () {
-        setState(() {
-          _address.add(_value);
-        });
-        Navigator.pop(context);
-      },
-    );
-
-    // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
-      title: Text("Add address"),
-      content: TextField(
-        autofocus: true,
-        onChanged: (value) {
-          _value = value;
-        },
+  _showModalBottomSheet() {
+    showModalBottomSheet(
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(10), topRight: Radius.circular(10)),
       ),
-      actions: [
-        saveButton,
-      ],
-    );
-
-    // show the dialog
-    showDialog(
       context: context,
       builder: (BuildContext context) {
-        return alert;
+        var colorScheme = Theme.of(context).colorScheme;
+        return Form(
+          key: _formKey,
+          child: Container(
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                vertical: 10,
+                horizontal: 10,
+              ),
+              child: Wrap(
+                runSpacing: 10,
+                alignment: WrapAlignment.center,
+                children: <Widget>[
+                  Text(
+                    'Thêm địa chỉ',
+                    style: TextStyles.h2Bold
+                        .merge(TextStyle(color: colorScheme.onBackground)),
+                  ),
+                  TextFormField(
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.all(10),
+                      filled: true,
+                      fillColor: colorScheme.surface,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      hintText: 'Nhập địa chỉ...',
+                      hintStyle: TextStyles.h5
+                          .merge(TextStyle(color: colorScheme.onSurface)),
+                    ),
+                    textAlign: TextAlign.center,
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Không được để trống trường này';
+                      }
+                      if (value.length <= 10) {
+                        return 'Giá trị nhập vào không nhỏ hơn 10 ký tự';
+                      }
+                      return null;
+                    },
+                    onChanged: (value) {
+                      _value = value;
+                    },
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).viewInsets.bottom),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        Container(
+                          decoration: BoxDecoration(
+                            gradient: GradientColor.of(context).primaryGradient,
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                          ),
+                          child: CupertinoButton(
+                            child: Text(
+                              'Thêm',
+                              style: TextStyles.h5
+                                  .merge(TextStyle(color: colorScheme.surface)),
+                            ),
+                            color: Colors.transparent,
+                            padding: EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 100),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(10.0)),
+                            minSize: 0,
+                            onPressed: () {
+                              if (_formKey.currentState.validate()) {
+                                setState(() {
+                                  _address.add(_value);
+                                  _height = _height + 25;
+                                  if (_height > 100) {
+                                    _height = 100;
+                                  }
+                                });
+                                Navigator.pop(context);
+                                Scaffold.of(context).showSnackBar(
+                                    SnackBar(content: Text('Thêm thành công')));
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
       },
     );
   }
 
   List<Widget> _buildListAddress() {
-    return _address.asMap().map((index, _value) => MapEntry(index, Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: Row(
-          children: <Widget>[
-            Expanded(
-              child: Text(
-                _value,
-                overflow: TextOverflow.ellipsis,
+    return _address
+        .asMap()
+        .map((index, _value) => MapEntry(
+            index,
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Text(
+                      _value,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  CupertinoButton(
+                    padding: EdgeInsets.all(0),
+                    minSize: 0,
+                    child: Icon(Icons.indeterminate_check_box),
+                    onPressed: () {
+                      //TODO delete _address[index]
+                      _address.removeAt(index);
+                      setState(() {
+                        _height = _height - 25;
+                        if (_height < 15) {
+                          _height = 15;
+                        }
+                      });
+                    },
+                  ),
+                ],
               ),
-            ),
-            CupertinoButton(
-              padding: EdgeInsets.all(0),
-              minSize: 0,
-              child: Icon(Icons.indeterminate_check_box),
-              onPressed: () {
-                //TODO delete _address[index]
-                _address.removeAt(index);
-                setState(() {
-                });
-
-              },
-            ),
-          ],
-        ),
-      ))).values.toList();
+            )))
+        .values
+        .toList();
   }
 
   Future<Null> _selectDate(BuildContext context) async {

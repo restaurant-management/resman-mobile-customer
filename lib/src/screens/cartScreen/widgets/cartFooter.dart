@@ -5,6 +5,7 @@ import 'package:gradient_widgets/gradient_widgets.dart';
 import 'package:resman_mobile_customer/src/blocs/cartBloc/bloc.dart';
 import 'package:resman_mobile_customer/src/blocs/cartBloc/event.dart';
 import 'package:resman_mobile_customer/src/blocs/cartBloc/state.dart';
+import 'package:resman_mobile_customer/src/screens/customerCreateBillScreen/customerCreateBillScreen.dart';
 
 import 'summaryBill.dart';
 
@@ -61,10 +62,10 @@ class _CartFooterState extends State<CartFooter> {
                   gradient: LinearGradient(
                     colors: <Color>[
                       !_isCreating
-                          ? const Color.fromRGBO(88, 39, 176, 1)
+                          ? Theme.of(context).colorScheme.primaryVariant
                           : const Color.fromRGBO(0, 0, 0, 0.5),
                       !_isCreating
-                          ? const Color.fromRGBO(0, 39, 176, 1)
+                          ? Theme.of(context).primaryColor
                           : const Color.fromRGBO(0, 0, 0, 0.5),
                     ],
                     stops: [0.1, 1.0],
@@ -72,7 +73,13 @@ class _CartFooterState extends State<CartFooter> {
                     end: Alignment.topLeft,
                   ),
                   callback: () {
-                    if (!_isCreating) _cartBloc.dispatch(CreateBillFromCart());
+//                    if (!_isCreating) _cartBloc.dispatch(CreateBillFromCart());
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CustomerCreateBillScreen(),
+                      ),
+                    );
                   },
                 ),
               )

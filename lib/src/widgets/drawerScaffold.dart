@@ -38,14 +38,15 @@ class _DrawerScaffoldState extends State<DrawerScaffold> {
       builder: (BuildContext context, state) {
         return Scaffold(
           appBar: widget.appBar,
+          resizeToAvoidBottomPadding: false,
           body: widget.body,
           floatingActionButton: widget.floatingActionButton,
           floatingActionButtonLocation: widget.floatingActionButtonLocation,
           backgroundColor: Theme.of(context).colorScheme.background,
-          endDrawer: ProfileDrawer(
+          endDrawer: CartDrawer(),
+          drawer: ProfileDrawer(
             authenticationBloc: authenticationBloc,
           ),
-          drawer: CartDrawer(),
           bottomNavigationBar: widget.bottomNavigationBar,
         );
       },

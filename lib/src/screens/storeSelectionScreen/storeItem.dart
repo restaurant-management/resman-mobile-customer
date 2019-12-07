@@ -1,11 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:resman_mobile_customer/src/constants/textStyles.dart';
+import 'package:resman_mobile_customer/src/blocs/billItemBloc/event.dart';
+import 'package:resman_mobile_customer/src/models/storeModal.dart';
 import 'package:resman_mobile_customer/src/screens/dishesTodayScreen/dishesTodayScreen.dart';
+import 'package:resman_mobile_customer/src/utils/textStyles.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'storeSelectionScreen.dart';
 
 class StoreItem extends StatelessWidget {
   final Store store;
@@ -31,7 +32,7 @@ class StoreItem extends StatelessWidget {
         color: colorScheme.onPrimary,
         child: Padding(
           padding:
-          const EdgeInsets.only(left: 30, right: 12, top: 20, bottom: 20),
+              const EdgeInsets.only(left: 30, right: 12, top: 20, bottom: 20),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
@@ -45,7 +46,7 @@ class StoreItem extends StatelessWidget {
                       size: 20,
                       color: colorScheme.onBackground,
                     ),
-                    '2',
+                    store.amountDishes.toString(),
                   ),
                   ..._buildLeftIcon(
                     colorScheme,
@@ -64,8 +65,10 @@ class StoreItem extends StatelessWidget {
                       color: colorScheme.onBackground,
                     ),
                     DateFormat('hh:mm').format(store.openTime) +
-                        '\n' + '|' +'\n' +
-                        DateFormat('hh:mm').format(store.closeTime),
+                        '\n' +
+                        '|' +
+                        '\n' +
+                        DateFormat('HH:mm').format(store.closeTime),
                   )
                 ],
               ),
@@ -91,28 +94,39 @@ class StoreItem extends StatelessWidget {
                       children: <Widget>[
                         Text(
                           store.name,
-                          style: TextStyles.h4Headline.merge(
-                            TextStyle(color: colorScheme.primary, fontWeight: FontWeight.bold),
+                          style: TextStyles.h4.merge(
+                            TextStyle(
+                                color: colorScheme.primary,
+                                fontWeight: FontWeight.bold),
                           ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
                     SizedBox(height: 10),
-                    Row(
-                      children: <Widget>[
-                        Icon(
-                          Icons.pin_drop,
-                          color: colorScheme.onBackground,
-                          size: 16,
-                        ),
-                        SizedBox(width: 6),
-                        Text(
-                          store.address,
-                          style: TextStyles.subTitle3
-                              .merge(TextStyle(color: colorScheme.onBackground)),
-                        ),
-                        SizedBox(width: 14),
-                      ],
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8,),
+                      child: Row(
+                        children: <Widget>[
+                          Icon(
+                            Icons.pin_drop,
+                            color: colorScheme.onBackground,
+                            size: 16,
+                          ),
+                          SizedBox(width: 6),
+                          Flexible(
+                            fit: FlexFit.loose,
+                            child: Text(
+                              store.address,
+                              style: TextStyles.h4.merge(
+                                  TextStyle(color: colorScheme.onBackground)),
+                              softWrap: false,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          SizedBox(width: 14),
+                        ],
+                      ),
                     )
                   ],
                 ),
@@ -145,8 +159,9 @@ class StoreItem extends StatelessWidget {
               Text(
                 bottomText,
                 textAlign: TextAlign.center,
-                style: TextStyles.link2
-                    .merge(TextStyle(color: colorScheme.onBackground,)),
+                style: TextStyles.h4.merge(TextStyle(
+                  color: colorScheme.onBackground,
+                )),
               ),
               SizedBox(height: 8),
             ],

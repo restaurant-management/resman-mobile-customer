@@ -24,6 +24,7 @@ class SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).primaryColor;
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -32,10 +33,10 @@ class SearchScreenState extends State<SearchScreen> {
           },
           icon: Icon(
             Icons.arrow_back_ios,
-            color: Theme.of(context).primaryColor,
+            color: colorScheme.onPrimary,
           ),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: primaryColor,
         title: TextField(
           onChanged: (value) {
             setState(() {
@@ -47,11 +48,11 @@ class SearchScreenState extends State<SearchScreen> {
           decoration: InputDecoration(
             suffixIcon: Icon(
               Icons.search,
-              color: primaryColor,
+              color: colorScheme.onPrimary,
             ),
             contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
             hintText: 'Nhập tên món ăn ...',
-            hintStyle: TextStyle(color: Color.fromRGBO(88, 37, 176, 0.8)),
+            hintStyle: TextStyle(color: colorScheme.onPrimary),
           ),
         ),
       ),

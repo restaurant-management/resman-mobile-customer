@@ -13,9 +13,9 @@ class CartHeader extends StatelessWidget {
       decoration: new BoxDecoration(
           gradient: new LinearGradient(
             colors: <Color>[
-              const Color.fromRGBO(88, 39, 176, 1),
-              const Color.fromRGBO(88, 39, 176, 0.5),
-              const Color.fromRGBO(255, 255, 255, 0.0),
+              Theme.of(context).primaryColor.withAlpha(220),
+              Theme.of(context).primaryColor.withAlpha(120),
+              Theme.of(context).primaryColor.withAlpha(0),
             ],
             stops: [0.1, 0.5, 1.0],
             begin: Alignment.topCenter,
@@ -30,7 +30,7 @@ class CartHeader extends StatelessWidget {
             title == null ? 'Danh sách món đã chọn' : title,
             style: TextStyle(
               fontSize: 20,
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.onPrimary,
               fontWeight: FontWeight.bold,
             ),
           ),

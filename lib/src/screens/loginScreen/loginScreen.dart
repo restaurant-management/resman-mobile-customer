@@ -73,43 +73,45 @@ class _LoginScreenState extends State<LoginScreen> {
         body: Stack(
           children: <Widget>[
             ImageBackground(),
-            PageView.builder(
-              controller: controller,
-              itemBuilder: (context, position) {
-                if (position == 0) {
-                  return Transform(
-                    transform: Matrix4.identity()
-                      ..rotateY(currentPageValue - position)
-                      ..rotateZ(currentPageValue - position),
-                    child: LoginForm(
-                      loginBloc: _loginBloc,
-                      authenticationBloc: _authenticationBloc,
-                      onTap: () {
-                        controller.animateToPage(1,
+            Center(
+              child: PageView.builder(
+                controller: controller,
+                itemBuilder: (context, position) {
+                  if (position == 0) {
+                    return Transform(
+                      transform: Matrix4.identity()
+                        ..rotateY(currentPageValue - position)
+                        ..rotateZ(currentPageValue - position),
+                      child: LoginForm(
+                        loginBloc: _loginBloc,
+                        authenticationBloc: _authenticationBloc,
+                        onTap: () {
+                          controller.animateToPage(1,
+                              duration: Duration(milliseconds: 500),
+                              curve: Curves.decelerate);
+                        },
+                      ),
+                    );
+                  } else {
+                    return Transform(
+                      transform: Matrix4.identity()
+                        ..rotateY(currentPageValue - position)
+                        ..rotateZ(currentPageValue - position),
+                      child: SignUpForm(
+                        registerBloc: _registerBloc,
+                        onTap: () {
+                          controller.animateToPage(
+                            0,
                             duration: Duration(milliseconds: 500),
-                            curve: Curves.decelerate);
-                      },
-                    ),
-                  );
-                } else {
-                  return Transform(
-                    transform: Matrix4.identity()
-                      ..rotateY(currentPageValue - position)
-                      ..rotateZ(currentPageValue - position),
-                    child: SignUpForm(
-                      registerBloc: _registerBloc,
-                      onTap: () {
-                        controller.animateToPage(
-                          0,
-                          duration: Duration(milliseconds: 500),
-                          curve: Curves.decelerate,
-                        );
-                      },
-                    ),
-                  );
-                }
-              },
-              itemCount: 2,
+                            curve: Curves.decelerate,
+                          );
+                        },
+                      ),
+                    );
+                  }
+                },
+                itemCount: 2,
+              ),
             ),
           ],
         ),

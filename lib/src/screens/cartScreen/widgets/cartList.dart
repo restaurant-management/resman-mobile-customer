@@ -7,6 +7,7 @@ import 'package:resman_mobile_customer/src/blocs/cartBloc/event.dart';
 import 'package:resman_mobile_customer/src/blocs/cartBloc/state.dart';
 import 'package:resman_mobile_customer/src/models/cartDishModel.dart';
 import 'package:resman_mobile_customer/src/screens/billDetailScreen/billDetailScreen.dart';
+import 'package:resman_mobile_customer/src/utils/textStyles.dart';
 import 'package:resman_mobile_customer/src/widgets/errorIndicator.dart';
 import 'package:resman_mobile_customer/src/widgets/loadingIndicator.dart';
 
@@ -113,8 +114,8 @@ class _CartListState extends State<CartList> {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (BuildContext context) => BillDetailScreen(
-                              bill: state.bill,
-                            ),
+                          bill: state.bill,
+                        ),
                       ),
                     );
                   },
@@ -187,7 +188,12 @@ class _CartListState extends State<CartList> {
                 content: new Text("Hãy liên hệ với nhân viên, để đặt món."),
                 actions: <Widget>[
                   new FlatButton(
-                    child: new Text("Oke"),
+                    child: new Text(
+                      "Oke",
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.secondaryVariant,
+                      ),
+                    ),
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
