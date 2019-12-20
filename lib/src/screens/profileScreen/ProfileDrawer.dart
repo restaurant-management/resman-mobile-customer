@@ -12,6 +12,7 @@ import 'package:resman_mobile_customer/src/enums/permission.dart';
 import 'package:resman_mobile_customer/src/models/userModel.dart';
 import 'package:resman_mobile_customer/src/screens/storeSelectionScreen/storeSelectionScreen.dart'
     show Store, StoreSelectionScreen;
+import 'package:resman_mobile_customer/src/utils/textStyles.dart';
 import 'package:resman_mobile_customer/src/widgets/errorIndicator.dart';
 import 'package:resman_mobile_customer/src/widgets/loadingIndicator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -62,8 +63,7 @@ class ProfileDrawer extends StatefulWidget {
 class _ProfileDrawerState extends State<ProfileDrawer> {
   CurrentUserBloc _currentUserBloc = CurrentUserBloc();
   Widget storeLogo;
-  Future<Store> store;
-
+  String storeName;
 
   @override
   void initState() {
@@ -72,17 +72,19 @@ class _ProfileDrawerState extends State<ProfileDrawer> {
       width: 30,
       height: 30,
     );
+    storeName = '';
+
     SharedPreferences.getInstance().then((value) {
       SharedPreferences prefs = value;
       if (prefs.containsKey('store')) {
         var storeId = prefs.getInt('store');
-        store = getStoreDetail(storeId);
-        store.then((value) {
+        getStoreDetail(storeId).then((value) {
           setState(() {
             storeLogo = CircleAvatar(
               radius: 40,
               backgroundImage: NetworkImage(value.logo),
             );
+            storeName = value.name;
           });
         }).catchError((e) {
           print(e);
@@ -203,27 +205,34 @@ class _ProfileDrawerState extends State<ProfileDrawer> {
           Positioned(
             top: 20,
             right: 20,
-            child: Container(
-              child: Center(
-                child: InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => StoreSelectionScreen(),
-                      ),
-                    );
-                  },
-                  child: storeLogo,
+            child: Column(
+              children: <Widget>[
+                Container(
+                  child: Center(
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                StoreSelectionScreen(canBack: true),
+                          ),
+                        );
+                      },
+                      child: storeLogo,
+                    ),
+                  ),
+                  width: 50.0,
+                  height: 50.0,
+                  padding: const EdgeInsets.all(0.0),
+                  decoration: new BoxDecoration(
+                    color: Theme.of(context).colorScheme.onPrimary, // border color
+                    shape: BoxShape.circle,
+                  ),
                 ),
-              ),
-              width: 50.0,
-              height: 50.0,
-              padding: const EdgeInsets.all(0.0),
-              decoration: new BoxDecoration(
-                color: Theme.of(context).colorScheme.onPrimary, // border color
-                shape: BoxShape.circle,
-              ),
+                SizedBox(height: 10),
+                Text(storeName, style: TextStyles.h4)
+              ],
             ),
           )
         ]),
@@ -233,8 +242,8 @@ class _ProfileDrawerState extends State<ProfileDrawer> {
     );
   }
 
-  List<Widget> _buildChangeAuthenticatedAndUnauthenticated(
-  UserModel user,{bool isAuth = false}) {
+  List<Widget> _buildChangeAuthenticatedAndUnauthenticated(UserModel user,
+      {bool isAuth = false}) {
     if (isAuth)
       return [
         ListTile(
@@ -283,7 +292,7 @@ class _ProfileDrawerState extends State<ProfileDrawer> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => EditPasswordScreen(
-                      currentUser: user,
+                          currentUser: user,
                         )));
           },
         ),

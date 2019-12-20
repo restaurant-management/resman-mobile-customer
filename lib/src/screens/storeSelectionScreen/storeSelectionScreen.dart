@@ -4,31 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:resman_mobile_customer/src/models/storeModal.dart';
+import 'package:resman_mobile_customer/src/repositories/repository.dart';
 import 'package:resman_mobile_customer/src/screens/storeSelectionScreen/storeItem.dart';
 import 'package:resman_mobile_customer/src/widgets/AppBars/backAppBar.dart';
 
 import 'storeItem.dart';
-
-Future<Store> getListStoreDetail() async {
-  final response =
-      await http.get('http://resman-web-admin-api.herokuapp.com/api/stores/');
-
-  if (response.statusCode == 200) {
-    // If the call to the server was successful, parse the JSON.
-    // TODO map json.decode
-    return Store.fromJson(json.decode(response.body));
-  } else {
-    // If that call was not successful, throw an error.
-    String message;
-    try {
-      message = jsonDecode(response.body)['message'];
-    } catch (e) {
-      print('Error: $e');
-    }
-    if (message != null && message.isNotEmpty) throw Exception(message);
-    throw Exception('Tải thông tin cửa hàng thất bại.');
-  }
-}
 
 Future<List<Store>> getAll() async {
   final response =
@@ -54,6 +34,10 @@ Future<List<Store>> getAll() async {
 }
 
 class StoreSelectionScreen extends StatefulWidget {
+  final bool canBack;
+
+  const StoreSelectionScreen({Key key, this.canBack = false}) : super(key: key);
+
   @override
   _StoreSelectScreenState createState() => _StoreSelectScreenState();
 }
@@ -77,6 +61,7 @@ class _StoreSelectScreenState extends State<StoreSelectionScreen>
     ColorScheme colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
         appBar: BackAppBar(
+          showBackButton: widget.canBack,
           right: <Widget>[
             CupertinoButton(
               pressedOpacity: 1,
@@ -144,6 +129,7 @@ class _StoreSelectScreenState extends State<StoreSelectionScreen>
           .toList();
     }
     return ListView.builder(
+      physics: BouncingScrollPhysics(),
       itemCount: searchList.length,
       itemBuilder: (BuildContext context, int index) {
         //
