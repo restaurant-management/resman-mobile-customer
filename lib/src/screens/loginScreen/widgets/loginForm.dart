@@ -44,6 +44,9 @@ class _LoginFormState extends State<LoginForm> {
   void initState() {
     _autoValidate = false;
     _loginBloc.dispatch(InitializeLoginForm());
+    // TODO remove in release mode
+    _usernameController.text = 'customer';
+    _passwordController.text = 'customer';
     super.initState();
   }
 
@@ -79,7 +82,10 @@ class _LoginFormState extends State<LoginForm> {
                   gradient: new LinearGradient(
                     colors: <Color>[
                       Theme.of(context).primaryColor.withAlpha(125),
-                      Theme.of(context).colorScheme.primaryVariant.withAlpha(175),
+                      Theme.of(context)
+                          .colorScheme
+                          .primaryVariant
+                          .withAlpha(175),
                       const Color.fromRGBO(0, 0, 0, 0.7),
                     ],
                     stops: [0.1, 0.5, 1.0],
@@ -131,6 +137,7 @@ class _LoginFormState extends State<LoginForm> {
                         loadingKey: _loginButton,
                         text: "Đăng nhập",
                         onPressed: () {
+                          FocusScope.of(context).unfocus();
                           if (_validateInputs()) {
                             _loginBloc.dispatch(
                               LoginButtonPressed(

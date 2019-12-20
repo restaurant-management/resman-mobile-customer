@@ -28,12 +28,12 @@ class Store {
   factory Store.fromJson(Map<String,dynamic> json){
     print(json);
     return Store(
-      id: json['id'],
+      id: int.tryParse(json['id']) ?? json['id'],
       name: json['name'],
       logo: json['logo'],
       address: json['address'],
       description: json['description'],
-      hotline: json['hoitline'],
+      hotline: json['hotline'],
       amountDishes: json['amountDishes'],
       openTime: DateFormat('hh:mm:ss').parse(json['openTime']),
       closeTime: DateFormat('hh:mm:ss').parse(json['closeTime']),

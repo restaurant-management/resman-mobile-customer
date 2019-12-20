@@ -1,37 +1,11 @@
-import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:resman_mobile_customer/src/models/storeModal.dart';
 import 'package:resman_mobile_customer/src/repositories/repository.dart';
 import 'package:resman_mobile_customer/src/screens/storeSelectionScreen/storeItem.dart';
 import 'package:resman_mobile_customer/src/widgets/AppBars/backAppBar.dart';
 
 import 'storeItem.dart';
-
-Future<List<Store>> getAll() async {
-  final response =
-      await http.get('http://resman-web-admin-api.herokuapp.com/api/stores/');
-  if (response.statusCode == 200) {
-    List<Store> result = [];
-    List<dynamic> list = jsonDecode(response.body);
-    for (int i = 0; i < list.length; i++) {
-      var store = Store.fromJson(list[i]);
-      result.add(store);
-    }
-    return result;
-  } else {
-    String message;
-    try {
-      message = jsonDecode(response.body)['message'];
-    } catch (e) {
-      print('Error: $e');
-    }
-    if (message != null && message.isNotEmpty) throw Exception(message);
-    throw Exception('Tải danh sách cửa hàng thất bại.');
-  }
-}
 
 class StoreSelectionScreen extends StatefulWidget {
   final bool canBack;
@@ -53,7 +27,7 @@ class _StoreSelectScreenState extends State<StoreSelectionScreen>
   void initState() {
     this.searchInputVisible = false;
     super.initState();
-    stores = getAll();
+    stores = Repository().getAllStore();
   }
 
   @override

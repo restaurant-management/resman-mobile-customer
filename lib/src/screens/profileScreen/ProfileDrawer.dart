@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -10,13 +8,14 @@ import 'package:resman_mobile_customer/src/blocs/currentUserBloc/event.dart';
 import 'package:resman_mobile_customer/src/blocs/currentUserBloc/state.dart';
 import 'package:resman_mobile_customer/src/enums/permission.dart';
 import 'package:resman_mobile_customer/src/models/userModel.dart';
+import 'package:resman_mobile_customer/src/repositories/repository.dart';
 import 'package:resman_mobile_customer/src/screens/storeSelectionScreen/storeSelectionScreen.dart'
     show Store, StoreSelectionScreen;
 import 'package:resman_mobile_customer/src/utils/textStyles.dart';
 import 'package:resman_mobile_customer/src/widgets/errorIndicator.dart';
 import 'package:resman_mobile_customer/src/widgets/loadingIndicator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
+
 import '../../blocs/authenticationBloc/bloc.dart';
 import '../../blocs/authenticationBloc/event.dart';
 import '../../blocs/authenticationBloc/state.dart';
@@ -25,29 +24,6 @@ import '../editProfileScreen/editPasswordScreen.dart';
 import '../editProfileScreen/editProfileScreen.dart';
 import '../loginScreen/loginScreen.dart';
 import 'profileScreen.dart';
-import 'package:resman_mobile_customer/src/models/storeModal.dart';
-
-Future<Store> getStoreDetail(int storeId) async {
-  print('Fetching...');
-  final response = await http
-      .get('http://resman-web-admin-api.herokuapp.com/api/stores/$storeId');
-
-  if (response.statusCode == 200) {
-    // If the call to the server was successful, parse the JSON.
-    // TODO map json.decode
-    return Store.fromJson(json.decode(response.body));
-  } else {
-    // If that call was not successful, throw an error.
-    String message;
-    try {
-      message = jsonDecode(response.body)['message'];
-    } catch (e) {
-      print('Error: $e');
-    }
-    if (message != null && message.isNotEmpty) throw Exception(message);
-    throw Exception('Tải thông tin cửa hàng thất bại.');
-  }
-}
 
 class ProfileDrawer extends StatefulWidget {
   final AuthenticationBloc authenticationBloc;
@@ -74,21 +50,22 @@ class _ProfileDrawerState extends State<ProfileDrawer> {
     );
     storeName = '';
 
-    SharedPreferences.getInstance().then((value) {
-      SharedPreferences prefs = value;
-      if (prefs.containsKey('store')) {
-        var storeId = prefs.getInt('store');
-        getStoreDetail(storeId).then((value) {
-          setState(() {
-            storeLogo = CircleAvatar(
-              radius: 40,
-              backgroundImage: NetworkImage(value.logo),
-            );
-            storeName = value.name;
-          });
-        }).catchError((e) {
-          print(e);
+    Repository().getStore().then((value) {
+      if (value != null) {
+        setState(() {
+          storeLogo = CircleAvatar(
+            radius: 40,
+            backgroundImage: NetworkImage(value.logo),
+          );
+          storeName = value.name;
         });
+      } else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => StoreSelectionScreen(canBack: true),
+          ),
+        );
       }
     });
 
@@ -205,34 +182,43 @@ class _ProfileDrawerState extends State<ProfileDrawer> {
           Positioned(
             top: 20,
             right: 20,
-            child: Column(
-              children: <Widget>[
-                Container(
-                  child: Center(
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                StoreSelectionScreen(canBack: true),
-                          ),
-                        );
-                      },
-                      child: storeLogo,
+            child: Container(
+              constraints: BoxConstraints(maxWidth: 100),
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    child: Center(
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  StoreSelectionScreen(canBack: true),
+                            ),
+                          );
+                        },
+                        child: storeLogo,
+                      ),
+                    ),
+                    width: 50.0,
+                    height: 50.0,
+                    padding: const EdgeInsets.all(0.0),
+                    decoration: new BoxDecoration(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onPrimary, // border color
+                      shape: BoxShape.circle,
                     ),
                   ),
-                  width: 50.0,
-                  height: 50.0,
-                  padding: const EdgeInsets.all(0.0),
-                  decoration: new BoxDecoration(
-                    color: Theme.of(context).colorScheme.onPrimary, // border color
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                SizedBox(height: 10),
-                Text(storeName, style: TextStyles.h4)
-              ],
+                  SizedBox(height: 10),
+                  Text(
+                    storeName,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyles.h4,
+                  )
+                ],
+              ),
             ),
           )
         ]),

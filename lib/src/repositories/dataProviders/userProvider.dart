@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:resman_mobile_customer/src/enums/permission.dart';
+import 'package:resman_mobile_customer/src/repositories/dataProviders/graphClient.dart';
+import 'package:resman_mobile_customer/src/repositories/dataProviders/graphQuery.dart';
 
 import '../../models/userModel.dart';
 
@@ -12,22 +14,10 @@ class UserProvider {
 
   Future<String> login(String usernameOrEmail, String password) async {
     print('Login...');
-    final response = await client.post('$apiUrl/api/customers/login',
-        body: {'usernameOrEmail': usernameOrEmail, 'password': password});
-    print(response.body);
-    if (response.statusCode == 200) {
-      final token = response.body.toString().replaceAll('"', '');
-      return token;
-    } else {
-      String message;
-      try {
-        message = jsonDecode(response.body)['message'];
-      } catch (e) {
-        print('Error: $e');
-      }
-      if (message != null && message.isNotEmpty) throw Exception(message);
-      throw Exception('Đăng nhập thất bại.');
-    }
+    final response = await (GraphClient()
+          ..addBody(GraphQuery.login(usernameOrEmail, password)))
+        .connect();
+    return response['loginAsCustomer'];
   }
 
   Future<void> register(String username, String email, String password) async {
@@ -41,30 +31,18 @@ class UserProvider {
       } catch (e) {
         print('Error: $e');
       }
-      if (message != null && message.isNotEmpty) throw Exception(message);
-      throw Exception('Đăng ký thất bại.');
+      if (message != null && message.isNotEmpty) throw (message);
+      throw ('Đăng ký thất bại.');
     }
   }
 
   Future<UserModel> getProfileByUsername(String username, String token) async {
-    final headers = {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Authorization': token
-    };
-    final response =
-        await client.get('$apiUrl/api/customers/$username', headers: headers);
-    if (response.statusCode == 200) {
-      return UserModel.fromJson(jsonDecode(response.body));
-    } else {
-      String message;
-      try {
-        message = jsonDecode(response.body)['message'];
-      } catch (e) {
-        print('Error: $e');
-      }
-      if (message != null && message.isNotEmpty) throw Exception(message);
-      throw Exception('Đăng nhập thất bại.');
-    }
+    final response = await (GraphClient()
+          ..authorization(token)
+          ..addBody(GraphQuery.me))
+        .connect();
+
+    return UserModel.fromJson(response['meAsCustomer']);
   }
 
   Future<UserModel> getProfileByEmail(String email, String token) async {
@@ -72,8 +50,8 @@ class UserProvider {
       'Content-Type': 'application/x-www-form-urlencoded',
       'Authorization': token
     };
-    final response =
-        await client.get('$apiUrl/api/customers/email/$email', headers: headers);
+    final response = await client.get('$apiUrl/api/customers/email/$email',
+        headers: headers);
     if (response.statusCode == 200) {
       return UserModel.fromJson(jsonDecode(response.body));
     } else {
@@ -83,8 +61,8 @@ class UserProvider {
       } catch (e) {
         print('Error: $e');
       }
-      if (message != null && message.isNotEmpty) throw Exception(message);
-      throw Exception('Đăng nhập thất bại.');
+      if (message != null && message.isNotEmpty) throw (message);
+      throw ('Đăng nhập thất bại.');
     }
   }
 
@@ -95,13 +73,15 @@ class UserProvider {
       'Authorization': token
     };
     Map<String, String> body = {};
-    if(birthday != null) body.addAll({'birthday': DateFormat('yyyy-MM-dd').format(birthday).toString()});
-    if(email != null) body.addAll({'email': email});
-    if(fullName != null) body.addAll({'fullName': fullName});
-    if(avatar != null) body.addAll({'avatar': avatar});
+    if (birthday != null)
+      body.addAll(
+          {'birthday': DateFormat('yyyy-MM-dd').format(birthday).toString()});
+    if (email != null) body.addAll({'email': email});
+    if (fullName != null) body.addAll({'fullName': fullName});
+    if (avatar != null) body.addAll({'avatar': avatar});
 
-    final response = await client
-        .put('$apiUrl/api/customers/$username', headers: headers, body: body);
+    final response = await client.put('$apiUrl/api/customers/$username',
+        headers: headers, body: body);
     if (response.statusCode == 200) {
       return UserModel.fromJson(jsonDecode(response.body));
     } else {
@@ -111,31 +91,17 @@ class UserProvider {
       } catch (e) {
         print('Error: $e');
       }
-      if (message != null && message.isNotEmpty) throw Exception(message);
-      throw Exception('Sửa thông tin thất bại.');
+      if (message != null && message.isNotEmpty) throw (message);
+      throw ('Sửa thông tin thất bại.');
     }
   }
 
   Future changePassword(String token, String username, String oldPassword,
       String newPassword) async {
-    Map<String, String> headers = {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Authorization': token
-    };
-    final response = await client.put('$apiUrl/api/customers/$username/password',
-        headers: headers,
-        body: {'oldPassword': oldPassword, 'newPassword': newPassword});
-
-    if (response.statusCode != 200) {
-      String message;
-      try {
-        message = jsonDecode(response.body)['message'];
-      } catch (e) {
-        print('Error: $e');
-      }
-      if (message != null && message.isNotEmpty) throw Exception(message);
-      throw Exception('Sửa mật khẩu thất bại.');
-    }
+    await (GraphClient()
+          ..authorization(token)
+          ..addBody(GraphQuery.changePassword(oldPassword, newPassword)))
+        .connect();
   }
 
   Future<List<Permission>> getAllUserPermissions(String username,
@@ -159,8 +125,8 @@ class UserProvider {
       } catch (e) {
         print('Error: $e');
       }
-      if (message != null && message.isNotEmpty) throw Exception(message);
-      throw Exception('Lấy danh sách tất cả quyền thất bại.');
+      if (message != null && message.isNotEmpty) throw (message);
+      throw ('Lấy danh sách tất cả quyền thất bại.');
     }
   }
 }

@@ -3,10 +3,11 @@ import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:meta/meta.dart';
-import 'package:resman_mobile_customer/src/enums/permission.dart';
 import 'package:resman_mobile_customer/src/models/billModel.dart';
 import 'package:resman_mobile_customer/src/models/cartDishModel.dart';
 import 'package:resman_mobile_customer/src/models/cartModel.dart';
+import 'package:resman_mobile_customer/src/models/storeModal.dart';
+import 'package:resman_mobile_customer/src/repositories/dataProviders/storeProvider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/dailyDish.dart';
@@ -35,6 +36,7 @@ class Repository {
 
   Repository._internal();
 
+  static const String PrepsStoreId = 'store-id';
   static const String PrepsTokenKey = 'jwt-login-token';
   static const String PrepsUsernameOrEmail = 'logged-in-username-or-email';
   static const String PrepsCart = 'user-cart';
@@ -43,8 +45,10 @@ class Repository {
   final DailyDishProvider _dailyDishProvider = DailyDishProvider();
   final DishProvider _dishProvider = DishProvider();
   final BillProvider _billProvider = BillProvider();
+  final StoreProvider _storeProvider = StoreProvider();
 
   UserModel _currentUser;
+  Store _currentStore;
   CartModel _currentCart = CartModel.empty();
   List<DailyDish> _dailyDishes;
 
@@ -248,7 +252,30 @@ class Repository {
         token, user.username, oldPassword, newPassword);
   }
 
-  Future<List<Permission>> getAllCurrentUserPermission() async {
-   return[];
+  Future<List<Store>> getAllStore() async {
+    return await _storeProvider.getAll();
+  }
+
+  Future<Store> getStore() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final storeId = prefs.getInt(PrepsStoreId);
+
+    if (storeId == null) return null;
+
+    if (_currentStore == null) {
+      try {
+        _currentStore = await _storeProvider.fetchStore(storeId);
+      } catch (_) {
+        return null;
+      }
+    }
+
+    return _currentStore;
+  }
+
+  Future selectStore(Store store) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _currentStore = store;
+    prefs.setInt(PrepsStoreId, store.id);
   }
 }

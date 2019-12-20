@@ -381,6 +381,7 @@ class EditProfileState extends State<EditProfileForm> {
                                 end: Alignment.topLeft,
                               ),
                               callback: () {
+                                FocusScope.of(context).unfocus();
                                 if (!isSaving)
                                   _editProfileBloc.dispatch(SaveNewProfile(
                                       currentUser,
@@ -490,8 +491,6 @@ class EditProfileState extends State<EditProfileForm> {
                                   }
                                 });
                                 Navigator.pop(context);
-                                Scaffold.of(context).showSnackBar(
-                                    SnackBar(content: Text('Thêm thành công')));
                               }
                             },
                           ),

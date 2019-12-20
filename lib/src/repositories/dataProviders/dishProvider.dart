@@ -18,8 +18,8 @@ class DishProvider {
       } catch (e) {
         print('Error: $e');
       }
-      if (message != null && message.isNotEmpty) throw Exception(message);
-      throw Exception('Tải thông tin món ăn thất bại.');
+      if (message != null && message.isNotEmpty) throw (message);
+      throw ('Tải thông tin món ăn thất bại.');
     }
   }
 
@@ -40,8 +40,8 @@ class DishProvider {
       } catch (e) {
         print('Error: $e');
       }
-      if (message != null && message.isNotEmpty) throw Exception(message);
-      throw Exception('Tải danh sách món ăn thất bại.');
+      if (message != null && message.isNotEmpty) throw (message);
+      throw ('Tải danh sách món ăn thất bại.');
     }
   }
 

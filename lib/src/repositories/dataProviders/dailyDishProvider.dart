@@ -24,8 +24,8 @@ class DailyDishProvider {
       } catch (e) {
         print('Error: $e');
       }
-      if (message != null && message.isNotEmpty) throw Exception(message);
-      throw Exception('Tải danh sách món ăn thất bại.');
+      if (message != null && message.isNotEmpty) throw (message);
+      throw ('Tải danh sách món ăn thất bại.');
     }
   }
 }

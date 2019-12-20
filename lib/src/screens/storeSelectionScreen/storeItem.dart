@@ -2,11 +2,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:resman_mobile_customer/src/blocs/billItemBloc/event.dart';
 import 'package:resman_mobile_customer/src/models/storeModal.dart';
+import 'package:resman_mobile_customer/src/repositories/repository.dart';
 import 'package:resman_mobile_customer/src/screens/dishesTodayScreen/dishesTodayScreen.dart';
 import 'package:resman_mobile_customer/src/utils/textStyles.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class StoreItem extends StatelessWidget {
   final Store store;
@@ -18,8 +17,7 @@ class StoreItem extends StatelessWidget {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: () async {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setInt('store', store.id);
+        await Repository().selectStore(store);
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (BuildContext context) => DishesTodayScreen(),

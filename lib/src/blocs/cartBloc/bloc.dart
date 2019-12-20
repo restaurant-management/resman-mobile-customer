@@ -71,7 +71,7 @@ class CartBloc extends Bloc<CartBlocEvent, CartBlocState> {
       yield CartBlocCreatingBill();
       try {
         if (currentCart.listDishes.length == 0)
-          throw Exception('Chưa có món ăn!');
+          throw ('Chưa có món ăn!');
         var bill = await _repository.createBill(
             currentCart.listDishes.map((e) => e.dishId).toList(),
             currentCart.listDishes.map((e) => e.quantity).toList(),

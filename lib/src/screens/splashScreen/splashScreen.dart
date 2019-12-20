@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:resman_mobile_customer/src/repositories/repository.dart';
 import 'package:resman_mobile_customer/src/screens/dishesTodayScreen/dishesTodayScreen.dart';
 import 'package:resman_mobile_customer/src/screens/storeSelectionScreen/storeSelectionScreen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../blocs/authenticationBloc/bloc.dart';
 import '../../blocs/authenticationBloc/event.dart';
@@ -45,9 +45,8 @@ class _SplashScreenState extends State<SplashScreen> {
         tag: 'HeroLogoImage',
         child: AnimationLogo(
           animationTime: 1000,
-          onAnimationCompleted: () async{
-            SharedPreferences prefs = await SharedPreferences.getInstance();
-            if(prefs.containsKey('store')) {
+          onAnimationCompleted: () async {
+            if (await Repository().getStore() != null) {
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(
                   builder: (BuildContext context) => DishesTodayScreen(),

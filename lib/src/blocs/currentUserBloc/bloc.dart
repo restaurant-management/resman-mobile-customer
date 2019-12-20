@@ -30,7 +30,6 @@ class CurrentUserBloc extends Bloc<CurrentUserEvent, CurrentUserState> {
       yield CurrentUserProfileFetching();
       try {
         await _repository.fetchCurrentUserProfile();
-        _allPermission = await _repository.getAllCurrentUserPermission();
         yield CurrentUserProfileFetched(_repository.currentUser);
       } catch (e) {
         yield CurrentUserProfileFetchFailure(e.toString());
