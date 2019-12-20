@@ -25,7 +25,7 @@ class CartDishModel {
     _dishId = dailyDish.dish.dishId;
     _quantity = quantity;
     _price =
-        dailyDish.price > 0 ? dailyDish.price : dailyDish.dish.defaultPrice;
+        dailyDish.dish.price > 0 ? dailyDish.dish.price : dailyDish.dish.defaultPrice;
   }
 
   Map<String, dynamic> toJson() => {

@@ -7,12 +7,12 @@ import 'package:resman_mobile_customer/src/enums/permission.dart';
 import '../../models/userModel.dart';
 
 class UserProvider {
-  static String apiUrl = 'https://restaurant-management-server.herokuapp.com';
+  static String apiUrl = 'http://resman-web-admin-api.herokuapp.com';
   Client client = Client();
 
   Future<String> login(String usernameOrEmail, String password) async {
     print('Login...');
-    final response = await client.post('$apiUrl/api/users/login',
+    final response = await client.post('$apiUrl/api/customers/login',
         body: {'usernameOrEmail': usernameOrEmail, 'password': password});
     print(response.body);
     if (response.statusCode == 200) {
@@ -32,7 +32,7 @@ class UserProvider {
 
   Future<void> register(String username, String email, String password) async {
     print('Register...');
-    final response = await client.post('$apiUrl/api/users/register',
+    final response = await client.post('$apiUrl/api/customers/register',
         body: {'username': username, 'password': password, 'email': email});
     if (response.statusCode != 200) {
       String message;
@@ -52,7 +52,7 @@ class UserProvider {
       'Authorization': token
     };
     final response =
-        await client.get('$apiUrl/api/users/$username', headers: headers);
+        await client.get('$apiUrl/api/customers/$username', headers: headers);
     if (response.statusCode == 200) {
       return UserModel.fromJson(jsonDecode(response.body));
     } else {
@@ -73,7 +73,7 @@ class UserProvider {
       'Authorization': token
     };
     final response =
-        await client.get('$apiUrl/api/users/email/$email', headers: headers);
+        await client.get('$apiUrl/api/customers/email/$email', headers: headers);
     if (response.statusCode == 200) {
       return UserModel.fromJson(jsonDecode(response.body));
     } else {
@@ -101,7 +101,7 @@ class UserProvider {
     if(avatar != null) body.addAll({'avatar': avatar});
 
     final response = await client
-        .put('$apiUrl/api/users/$username', headers: headers, body: body);
+        .put('$apiUrl/api/customers/$username', headers: headers, body: body);
     if (response.statusCode == 200) {
       return UserModel.fromJson(jsonDecode(response.body));
     } else {
@@ -122,7 +122,7 @@ class UserProvider {
       'Content-Type': 'application/x-www-form-urlencoded',
       'Authorization': token
     };
-    final response = await client.put('$apiUrl/api/users/$username/password',
+    final response = await client.put('$apiUrl/api/customers/$username/password',
         headers: headers,
         body: {'oldPassword': oldPassword, 'newPassword': newPassword});
 

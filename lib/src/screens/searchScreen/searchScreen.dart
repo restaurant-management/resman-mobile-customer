@@ -43,7 +43,7 @@ class SearchScreenState extends State<SearchScreen> {
               keyword = value;
             });
           },
-          style: TextStyle(color: primaryColor),
+          style: TextStyle(color: colorScheme.onPrimary),
           autofocus: true,
           decoration: InputDecoration(
             suffixIcon: Icon(

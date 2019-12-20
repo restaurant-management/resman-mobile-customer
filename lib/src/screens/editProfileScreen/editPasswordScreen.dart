@@ -36,7 +36,7 @@ class EditPasswordState extends State<EditPasswordScreen> {
   final _confirmPasswordController = TextEditingController();
   final ChangePasswordBloc _changePasswordBloc = ChangePasswordBloc();
 
-  UserModel get currentUser => widget.currentUser;
+  UserModel get currentUser => widget.currentUser ;
 
   @override
   Widget build(BuildContext context) {
@@ -102,6 +102,7 @@ class EditPasswordState extends State<EditPasswordScreen> {
                                 validator: (value) {
                                   if (value.isEmpty)
                                     return 'Vui lòng nhập mật khẩu cũ của bạn!';
+                                  return null;
                                 },
                                 decoration: InputDecoration(
                                   prefixIcon: Icon(
@@ -125,6 +126,7 @@ class EditPasswordState extends State<EditPasswordScreen> {
                                     return 'Mật khẩu phải lớn hơn 5 ký tự.';
                                   if (value == _oldPasswordController.text)
                                     return 'Mật khẩu mới phải khác mật khẩu cũ.';
+                                  return null;
                                 },
                                 decoration: InputDecoration(
                                   prefixIcon: Icon(
@@ -146,6 +148,7 @@ class EditPasswordState extends State<EditPasswordScreen> {
                                     return 'Vui lòng nhập lại mật khẩu mới!';
                                   if (value != _newPasswordController.text)
                                     return 'Mật khẩu mới không khớp';
+                                  return null;
                                 },
                                 decoration: InputDecoration(
                                   prefixIcon: Icon(

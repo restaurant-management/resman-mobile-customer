@@ -528,7 +528,6 @@ class EditProfileState extends State<EditProfileForm> {
                     minSize: 0,
                     child: Icon(Icons.indeterminate_check_box),
                     onPressed: () {
-                      //TODO delete _address[index]
                       _address.removeAt(index);
                       setState(() {
                         _height = _height - 25;

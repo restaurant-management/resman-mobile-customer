@@ -26,6 +26,7 @@ class Store {
   });
 
   factory Store.fromJson(Map<String,dynamic> json){
+    print(json);
     return Store(
       id: json['id'],
       name: json['name'],
@@ -36,7 +37,7 @@ class Store {
       amountDishes: json['amountDishes'],
       openTime: DateFormat('hh:mm:ss').parse(json['openTime']),
       closeTime: DateFormat('hh:mm:ss').parse(json['closeTime']),
-      rating: json['rating'],
+      rating: json['rating'] + .0,
     );
   }
 }

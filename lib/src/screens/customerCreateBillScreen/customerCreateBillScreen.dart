@@ -341,14 +341,14 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                         ),
                         Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.fromLTRB(20, 20, 8, 0),
+                            padding: const EdgeInsets.fromLTRB(10, 20, 10, 0),
                             child: Text(
                               '5000000 VNĐ',
                               style: TextStyles.h2Bold.merge(
                                 TextStyle(color: colorScheme.onBackground),
                               ),
                               overflow: TextOverflow.ellipsis,
-                              textAlign: TextAlign.left,
+                              textAlign: TextAlign.right,
                             ),
                           ),
                         ),

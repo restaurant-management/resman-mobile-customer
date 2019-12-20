@@ -43,7 +43,7 @@ class _DishDetailScreenState extends State<DishDetailScreen> {
     reviewComments = FakeReviewComments.reviewComments;
     if (widget.dailyDish != null) {
       _dish = widget.dailyDish.dish;
-      _discountPrice = widget.dailyDish.price;
+      _discountPrice = widget.dailyDish.dish.price;
     } else {
       _dish = widget.dishModal;
       _discountPrice = 0;
@@ -165,9 +165,12 @@ class _DishDetailScreenState extends State<DishDetailScreen> {
             ),
             ExpandedDetail(
               title: 'Chi tiết',
-              child: Text(
-                _dish.description,
-                style: TextStyle(color: Colors.black),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  _dish.description,
+                  style: TextStyle(color: Colors.black),
+                ),
               ),
               expand: true,
             ),
@@ -219,10 +222,7 @@ class _DishDetailScreenState extends State<DishDetailScreen> {
                   SizedBox(
                     height: 10,
                   ),
-                  Container(
-                    height: 600,
-                    child: _buildListReviewComment(),
-                  ),
+                  ..._buildListReviewComment(),
                 ],
               ),
               expand: true,
@@ -254,10 +254,7 @@ class _DishDetailScreenState extends State<DishDetailScreen> {
                     textAlign: TextAlign.left,
                     onChanged: (value) {
                       print(value.split('\n').length);
-                      if(value.split('\n').length >10)
-                        setState(() {
-
-                        });
+                      if (value.split('\n').length > 10) setState(() {});
                     },
                     maxLines: null,
                     keyboardType: TextInputType.multiline,
@@ -266,7 +263,7 @@ class _DishDetailScreenState extends State<DishDetailScreen> {
                         .merge(TextStyle(color: colorScheme.onBackground)),
                     decoration: InputDecoration(
                       suffixIcon: IconButton(
-                        onPressed: (){
+                        onPressed: () {
                           setState(() {
                             comments.add(_value);
                             Navigator.pop(context);
@@ -311,26 +308,30 @@ class _DishDetailScreenState extends State<DishDetailScreen> {
         });
   }
 
-  Widget _buildListReviewComment() {
-    return ListView.builder(
-      physics: BouncingScrollPhysics(),
-      itemCount: reviewComments.length,
-      itemBuilder: (BuildContext context, int index) {
-        if (index == 0)
-          return Column(
-            children: <Widget>[
-              SizedBox(
-                height: 8,
-              ),
+  List<Widget> _buildListReviewComment() {
+    return reviewComments
+        .asMap()
+        .map((index, value) {
+          if (index == 0)
+            return MapEntry(
+                index,
+                Column(
+                  children: <Widget>[
+                    SizedBox(
+                      height: 8,
+                    ),
+                    ReviewComment(
+                      reviewComment: reviewComments[index],
+                    ),
+                  ],
+                ));
+          return MapEntry(
+              index,
               ReviewComment(
                 reviewComment: reviewComments[index],
-              ),
-            ],
-          );
-        return ReviewComment(
-          reviewComment: reviewComments[index],
-        );
-      },
-    );
+              ));
+        })
+        .values
+        .toList();
   }
 }

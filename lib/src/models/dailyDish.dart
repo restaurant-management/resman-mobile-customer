@@ -7,25 +7,33 @@ import '../enums/daySession.dart';
 class DailyDish extends Equatable {
   DateTime _day;
   DaySession _session;
-  DailyDishStatus _status;
-  int _price;
+  int _storeId;
   DishModal _dish;
+  int _confirmBy;
+  DateTime _confirmAt;
 
   DateTime get day => _day;
 
   DaySession get session => _session;
 
-  DailyDishStatus get status => _status;
-
-  int get price => _price;
+  int get storeId => _storeId;
 
   DishModal get dish => _dish;
 
+  int get confirmBy => _confirmBy;
+
+  DateTime get confirmAt => _confirmAt;
+
   DailyDish.fromJson(Map<String, dynamic> parsedJson) {
-    _day = DateTime.parse(parsedJson['day']);
+    _day =
+    parsedJson['day'] != null ? DateTime.tryParse(parsedJson['day']) : null;
     _session = DaySession(parsedJson['session']);
-    _status = DailyDishStatus(parsedJson['status']);
-    _price = parsedJson['price'];
+    _storeId = parsedJson['storeId'];
+    _confirmBy = parsedJson['confirmBy'];
+    _confirmAt = parsedJson['confirmAt'] != null
+        ? DateTime.tryParse(parsedJson['confirmAt'])
+        : null;
+    print(parsedJson['dish']);
     _dish = DishModal.fromJson(parsedJson['dish']);
   }
 }

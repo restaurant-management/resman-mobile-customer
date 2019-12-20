@@ -48,12 +48,12 @@ class DishItemCard extends StatelessWidget {
                   height: contextSize.width / 2,
                 ),
               ),
-              dailyDish.price > 0 &&
-                      dailyDish.price - dailyDish.dish.defaultPrice < 0 &&
+              dailyDish.dish.price > 0 &&
+                      dailyDish.dish.price - dailyDish.dish.defaultPrice < 0 &&
                       dailyDish.dish.defaultPrice != 0
                   ? _buildDiscount(
                       discount:
-                          ((dailyDish.price - dailyDish.dish.defaultPrice) *
+                          ((dailyDish.dish.price - dailyDish.dish.defaultPrice) *
                                   100 /
                                   dailyDish.dish.defaultPrice)
                               .round()
@@ -88,15 +88,15 @@ class DishItemCard extends StatelessWidget {
                         mainAxisSize: MainAxisSize.max,
                         children: <Widget>[
                           Text(
-                            dailyDish.price > 0
-                                ? '${dailyDish.price} VNĐ'
+                            dailyDish.dish.price > 0
+                                ? '${dailyDish.dish.price} VNĐ'
                                 : '${dailyDish.dish.defaultPrice} VNĐ',
                             style: Theme.of(context).textTheme.body1,
                           ),
                           SizedBox(
                             width: 5,
                           ),
-                          dailyDish.price > 0
+                          dailyDish.dish.price > 0
                               ? Text(
                                   '${dailyDish.dish.defaultPrice} VNĐ',
                                   style: TextStyle(

@@ -99,6 +99,7 @@ class _DishesTodayScreenState extends State<DishesTodayScreen> {
                 ),
               );
             }
+            return Container();
           },
         ),
         Align(

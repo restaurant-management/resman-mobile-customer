@@ -46,7 +46,7 @@ class _PrimaryCartButtonState extends State<PrimaryCartButton> {
               Icons.shopping_cart,
               color: widget.color != null
                   ? widget.color
-                  : Theme.of(context).primaryColor,
+                  : Theme.of(context).colorScheme.onPrimary,
             ),
           ),
           Positioned(

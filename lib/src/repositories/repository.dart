@@ -98,10 +98,6 @@ class Repository {
     print(_currentUser);
   }
 
-  Future<List<DailyDish>> getAllDailyDish() async {
-    return await _dailyDishProvider.getAll();
-  }
-
   Future<List<DailyDish>> fetchAllDishToday() async {
     _dailyDishes = await _dailyDishProvider.getAllDishToday();
     return _dailyDishes;
@@ -253,9 +249,6 @@ class Repository {
   }
 
   Future<List<Permission>> getAllCurrentUserPermission() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString(PrepsTokenKey);
-    return _userProvider.getAllUserPermissions(_currentUser.username,
-        token: token);
+   return[];
   }
 }

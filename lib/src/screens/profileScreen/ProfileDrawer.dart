@@ -64,6 +64,7 @@ class _ProfileDrawerState extends State<ProfileDrawer> {
   Widget storeLogo;
   Future<Store> store;
 
+
   @override
   void initState() {
     storeLogo = SvgPicture.asset(
@@ -226,14 +227,14 @@ class _ProfileDrawerState extends State<ProfileDrawer> {
             ),
           )
         ]),
-        ..._buildChangeAuthenticatedAndUnauthenticated(
+        ..._buildChangeAuthenticatedAndUnauthenticated(user,
             isAuth: user != null ? true : false),
       ],
     );
   }
 
   List<Widget> _buildChangeAuthenticatedAndUnauthenticated(
-      {bool isAuth = false}) {
+  UserModel user,{bool isAuth = false}) {
     if (isAuth)
       return [
         ListTile(
@@ -282,7 +283,7 @@ class _ProfileDrawerState extends State<ProfileDrawer> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => EditPasswordScreen(
-//                      currentUser: user,
+                      currentUser: user,
                         )));
           },
         ),

@@ -19,9 +19,9 @@ class UserModel extends Equatable {
 
   String get fullName => _fullName;
 
-  String get avatar => _avatar;
-
   String get email => _email;
+
+  String get avatar => _avatar;
 
   DateTime get birthday => _birthday;
 
@@ -31,10 +31,10 @@ class UserModel extends Equatable {
 
   UserModel.fromJson(Map<String, dynamic> parsedJson) {
     _uuid = parsedJson['uuid'];
-    _username = parsedJson['userName'];
+    _username = parsedJson['username'];
     _fullName = parsedJson['fullName'];
-    _avatar = parsedJson['avatar'];
     _email = parsedJson['email'];
+    _avatar = parsedJson['avatar'];
     _birthday = parsedJson['birthday'] != null
         ? DateFormat('yyyy-MM-dd').parse(parsedJson['birthday'])
         : null;

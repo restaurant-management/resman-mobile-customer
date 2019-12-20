@@ -17,7 +17,8 @@ class Permission extends BaseEnum {
       Permission('update-shipping-bill-status');
   static final Permission updateCompleteBillStatus =
       Permission('update-Complete-bill-status');
-  static final Permission dishManagement = Permission('dish-management');
+  static final Permission dishManagement =
+      Permission('dish-management');
   static final Permission dailyDishManagement =
       Permission('daily-dish-management');
 
