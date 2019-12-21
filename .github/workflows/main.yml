@@ -14,7 +14,6 @@ jobs:
         channel: 'dev'
         flutter-version: '1.13.2'
     - run: flutter pub get
-    - run: flutter test
     - run: flutter build apk --debug --split-per-abi
     - name: Create a Release APK
       uses: ncipollo/release-action@v1
