@@ -19,12 +19,7 @@ class GraphQuery {
         longitude
       }
       favouriteDishes {
-        defaultPrice
-        description
         id
-        name
-        price
-        images
       }
     }
   }

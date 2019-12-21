@@ -5,11 +5,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_images_slider/flutter_images_slider.dart';
+import 'package:like_button/like_button.dart';
 import 'package:resman_mobile_customer/src/blocs/commentBloc.dart';
 import 'package:resman_mobile_customer/src/blocs/currentUserBloc/bloc.dart';
 import 'package:resman_mobile_customer/src/blocs/currentUserBloc/event.dart';
 import 'package:resman_mobile_customer/src/blocs/currentUserBloc/state.dart';
+import 'package:resman_mobile_customer/src/blocs/favouriteBloc.dart';
 import 'package:resman_mobile_customer/src/models/comment.dart';
+import 'package:resman_mobile_customer/src/models/userModel.dart';
 import 'package:resman_mobile_customer/src/screens/dishDetailScreen/reviewComment.dart';
 import 'package:resman_mobile_customer/src/utils/textStyles.dart';
 import 'package:resman_mobile_customer/src/widgets/errorIndicator.dart';
@@ -39,11 +42,13 @@ class DishDetailScreen extends StatefulWidget {
 class _DishDetailScreenState extends State<DishDetailScreen> {
   int _discountPrice;
   DishModal _dish;
+  UserModel _currentUser;
   bool liked;
   List<String> comments;
   TextEditingController _commentController = TextEditingController();
 
   CommentBloc _commentBloc;
+  FavouriteBloc _favouriteBloc;
 
   final CurrentUserBloc _currentUserBloc = CurrentUserBloc();
 
@@ -59,6 +64,7 @@ class _DishDetailScreenState extends State<DishDetailScreen> {
     }
     liked = false;
     _commentBloc = CommentBloc(_dish.dishId);
+    _favouriteBloc = FavouriteBloc();
     super.initState();
   }
 
@@ -73,6 +79,7 @@ class _DishDetailScreenState extends State<DishDetailScreen> {
   @override
   void dispose() {
     _commentBloc.dispose();
+    _favouriteBloc.dispose();
     super.dispose();
   }
 
@@ -81,235 +88,216 @@ class _DishDetailScreenState extends State<DishDetailScreen> {
     final primaryColor = Theme.of(context).primaryColor;
     final colorScheme = Theme.of(context).colorScheme;
     SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
-    return BlocBuilder(
+    return BlocListener(
       bloc: _currentUserBloc,
-      builder: (context, state) {
+      listener: (context, state) {
         if (state is CurrentUserProfileFetchFailure) {
           _currentUserBloc.dispatch(FetchCurrentUserProfile());
+        } else if (state is CurrentUserProfileFetched) {
+          setState(() {
+            _currentUser = state.user;
+          });
         }
-        return DrawerScaffold(
-          appBar: BackAppBar(),
-          bottomNavigationBar: widget.dailyDish != null
-              ? AddCartButton(
-                  dailyDish: widget.dailyDish,
-                )
-              : Container(),
-          body: SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
-            child: Column(
-              children: <Widget>[
-                ImagesSlider(
-                  items: map<Widget>(_dish.images, (index, i) {
-                    return Container(
-                      decoration: BoxDecoration(
-                          image: DecorationImage(
-                              image: NetworkImage(i), fit: BoxFit.cover)),
-                    );
-                  }),
-                  autoPlay: true,
-                  viewportFraction: 1.0,
-                  aspectRatio: 1.5,
-                  distortion: false,
-                  align: IndicatorAlign.bottom,
-                  indicatorWidth: 5,
-                  indicatorColor: Theme.of(context).colorScheme.background,
-                  indicatorBackColor: primaryColor,
-                  updateCallback: (index) {},
-                ),
-                SizedBox(
-                  height: 8,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.8,
-                        child: Text(
-                          _dish.name,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 3,
-                          style: Theme.of(context).textTheme.headline,
-                        ),
+      },
+      child: DrawerScaffold(
+        appBar: BackAppBar(),
+        bottomNavigationBar: widget.dailyDish != null
+            ? AddCartButton(
+                dailyDish: widget.dailyDish,
+              )
+            : Container(),
+        body: SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
+          child: Column(
+            children: <Widget>[
+              ImagesSlider(
+                items: map<Widget>(_dish.images, (index, i) {
+                  return Container(
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                            image: NetworkImage(i), fit: BoxFit.cover)),
+                  );
+                }),
+                autoPlay: true,
+                viewportFraction: 1.0,
+                aspectRatio: 1.5,
+                distortion: false,
+                align: IndicatorAlign.bottom,
+                indicatorWidth: 5,
+                indicatorColor: Theme.of(context).colorScheme.background,
+                indicatorBackColor: primaryColor,
+                updateCallback: (index) {},
+              ),
+              SizedBox(
+                height: 8,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        _dish.name,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 3,
+                        style: Theme.of(context).textTheme.headline,
                       ),
-                      IconButton(
-                        icon: liked
-                            ? Icon(
-                                Icons.favorite,
-                                color: primaryColor,
-                              )
-                            : Icon(
-                                Icons.favorite_border,
-                                color: Colors.black,
-                              ),
-                        onPressed: () {
-                          setState(() {
-                            liked = !liked;
-                          });
-                        },
-                      )
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Row(
-                    children: <Widget>[
-                      _discountPrice != null &&
-                              _discountPrice > 0 &&
-                              _discountPrice < _dish.defaultPrice
-                          ? Text(
-                              '${_dish.defaultPrice} VNĐ',
-                              style: TextStyle(
-                                  color: Colors.grey,
-                                  decoration: TextDecoration.lineThrough),
-                            )
-                          : Container(),
-                      _discountPrice != null &&
-                              _discountPrice > 0 &&
-                              _discountPrice < _dish.defaultPrice
-                          ? SizedBox(
-                              width: 20,
-                            )
-                          : Container(),
-                      Text(
-                        '${_discountPrice > 0 ? _discountPrice : _dish.defaultPrice} VNĐ',
-                        style: TextStyle(
-                            color: Colors.red,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 40,
-                ),
-                Divider(
-                  height: 2,
-                  color: Colors.grey,
-                ),
-                ExpandedDetail(
-                  title: 'Chi tiết',
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Text(
-                      _dish.description,
-                      style: TextStyle(color: Colors.black),
                     ),
+                    _buildLikeButton(_currentUser),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Row(
+                  children: <Widget>[
+                    _discountPrice != null &&
+                            _discountPrice > 0 &&
+                            _discountPrice < _dish.defaultPrice
+                        ? Text(
+                            '${_dish.defaultPrice} VNĐ',
+                            style: TextStyle(
+                                color: Colors.grey,
+                                decoration: TextDecoration.lineThrough),
+                          )
+                        : Container(),
+                    _discountPrice != null &&
+                            _discountPrice > 0 &&
+                            _discountPrice < _dish.defaultPrice
+                        ? SizedBox(
+                            width: 20,
+                          )
+                        : Container(),
+                    Text(
+                      '${_discountPrice > 0 ? _discountPrice : _dish.defaultPrice} VNĐ',
+                      style: TextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 40,
+              ),
+              Divider(
+                height: 2,
+                color: Colors.grey,
+              ),
+              ExpandedDetail(
+                title: 'Chi tiết',
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Text(
+                    _dish.description,
+                    style: TextStyle(color: Colors.black),
                   ),
-                  expand: true,
                 ),
-                SizedBox(
-                  height: 10,
-                ),
-                Divider(
-                  height: 2,
-                  color: Colors.grey,
-                ),
-                ExpandedDetail(
-                  title: 'Nhận xét',
-                  onFirstOpen: () {
-                    _commentBloc.dispatch(FetchComment());
-                  },
-                  child: Column(
-                    children: <Widget>[
-                      Container(
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                                width: 0.5, color: colorScheme.onSurface),
-                          ),
+                expand: true,
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Divider(
+                height: 2,
+                color: Colors.grey,
+              ),
+              ExpandedDetail(
+                title: 'Nhận xét',
+                onFirstOpen: () {
+                  _commentBloc.dispatch(FetchComment());
+                },
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                              width: 0.5, color: colorScheme.onSurface),
                         ),
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
-                          child: Row(
-                            children: <Widget>[
-                              Container(
-                                width: 50.0,
-                                height: 50.0,
-                                child: ClipOval(
-                                  child: state is CurrentUserProfileFetched
-                                      ? CachedNetworkImage(
-                                          placeholder: (context, url) =>
-                                              Image.asset(
-                                            'assets/images/default-avatar.jpg',
-                                            fit: BoxFit.cover,
-                                          ),
-                                          fit: BoxFit.cover,
-                                          imageUrl: state.user.avatar,
-                                        )
-                                      : Image.asset(
-                                          'assets/images/default-avatar.jpg',
-                                          fit: BoxFit.cover,
-                                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
+                        child: Row(
+                          children: <Widget>[
+                            Container(
+                              width: 50.0,
+                              height: 50.0,
+                              child: ClipOval(
+                                child: CachedNetworkImage(
+                                  placeholder: (context, url) => Image.asset(
+                                    'assets/images/default-avatar.jpg',
+                                    fit: BoxFit.cover,
+                                  ),
+                                  fit: BoxFit.cover,
+                                  imageUrl: _currentUser?.avatar ?? '',
                                 ),
                               ),
-                              SizedBox(
-                                width: 20,
-                              ),
-                              GestureDetector(
-                                onTap: state is CurrentUserProfileFetched
-                                    ? () {
-                                        _showReviewCommentBottomSheet(
-                                            context, state.user.avatar);
-                                      }
-                                    : null,
-                                child: Container(
-                                  alignment: Alignment.centerLeft,
-                                  height: 50,
-                                  width: 300,
-                                  child: Text(
-                                    'Nhận xét...',
-                                    style: TextStyle(
-                                      color: colorScheme.onSurface,
-                                      fontSize: 16,
-                                    ),
+                            ),
+                            SizedBox(
+                              width: 20,
+                            ),
+                            GestureDetector(
+                              onTap: _currentUser != null
+                                  ? () {
+                                      _showReviewCommentBottomSheet(
+                                          context, _currentUser.avatar);
+                                    }
+                                  : null,
+                              child: Container(
+                                alignment: Alignment.centerLeft,
+                                height: 50,
+                                width: 300,
+                                child: Text(
+                                  'Nhận xét...',
+                                  style: TextStyle(
+                                    color: colorScheme.onSurface,
+                                    fontSize: 16,
                                   ),
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
-                      BlocBuilder(
-                        bloc: _commentBloc,
-                        builder: (context, state) {
-                          if (state is CommentBlocFetchFailure) {
-                            return ErrorIndicator(
-                              message: 'Tải bình luận thất bại!',
-                              reloadOnPressed: () {
-                                _commentBloc.dispatch(FetchComment());
-                              },
-                            );
-                          } else if (state is CommentBlocFetching) {
-                            return LoadingIndicator(
-                              message: 'Đang tải bình luận...',
-                              messageColor: colorScheme.onBackground,
-                            );
-                          } else {
-                            return Column(
-                              children: <Widget>[
-                                ..._buildListReviewComment(
-                                    _commentBloc.comments)
-                              ],
-                            );
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-                  expand: false,
+                    ),
+                    BlocBuilder(
+                      bloc: _commentBloc,
+                      builder: (context, state) {
+                        if (state is CommentBlocFetchFailure) {
+                          return ErrorIndicator(
+                            message: 'Tải bình luận thất bại!',
+                            reloadOnPressed: () {
+                              _commentBloc.dispatch(FetchComment());
+                            },
+                          );
+                        } else if (state is CommentBlocFetching) {
+                          return LoadingIndicator(
+                            message: 'Đang tải bình luận...',
+                            messageColor: colorScheme.onBackground,
+                          );
+                        } else {
+                          return Column(
+                            children: <Widget>[
+                              ..._buildListReviewComment(_commentBloc.comments)
+                            ],
+                          );
+                        }
+                      },
+                    ),
+                  ],
                 ),
-                SizedBox(
-                  height: 10,
-                ),
-              ],
-            ),
+                expand: false,
+              ),
+              SizedBox(
+                height: 10,
+              ),
+            ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
@@ -436,5 +424,36 @@ class _DishDetailScreenState extends State<DishDetailScreen> {
         })
         .values
         .toList();
+  }
+
+  Widget _buildLikeButton(UserModel user) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return LikeButton(
+      isLiked: user != null
+          ? user.favouriteDishes.firstWhere((item) => item == _dish.dishId,
+                  orElse: () => -1) >
+              -1
+          : false,
+      countPostion: CountPostion.left,
+      countBuilder: (count, isLiked, text) {
+        return Text(
+          text,
+          style:
+              TextStyles.h5.merge(TextStyle(color: colorScheme.onBackground)),
+        );
+      },
+      likeBuilder: (isLiked) {
+        return Icon(
+          isLiked ? Icons.favorite : Icons.favorite_border,
+          color: isLiked ? colorScheme.primary : colorScheme.onSurface,
+        );
+      },
+      onTap: (isLiked) async {
+        _favouriteBloc.dispatch(isLiked
+            ? UnFavouriteDish(_dish.dishId)
+            : FavouriteDish(_dish.dishId));
+        return !isLiked;
+      },
+    );
   }
 }
