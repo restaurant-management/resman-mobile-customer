@@ -1,5 +1,12 @@
-on: push
-name: Test, Build and Release apk
+on:
+  pull_request:
+    branches:
+    - dev
+  push:
+    branches:
+    - dev
+  
+name: Test and Build apk
 jobs:
   build:
     name: Build APK
@@ -15,8 +22,3 @@ jobs:
         flutter-version: '1.13.2'
     - run: flutter pub get
     - run: flutter build apk --debug --split-per-abi
-    - name: Create a Release APK
-      uses: ncipollo/release-action@v1
-      with:
-        artifacts: "build/app/outputs/apk/debug/*.apk"
-        token: ${{ secrets.TOKEN }}
