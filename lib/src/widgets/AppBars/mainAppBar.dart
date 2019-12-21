@@ -34,7 +34,7 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: Hero(
         tag: 'HeroLogoImage',
         child: Text(
-          'Res Man',
+          'Resman',
           style:
               TextStyle(color: colorScheme.onPrimary, fontSize: 40, fontFamily: 'Rukola'),
         ),

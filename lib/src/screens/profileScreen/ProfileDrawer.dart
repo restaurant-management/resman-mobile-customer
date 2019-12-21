@@ -10,11 +10,10 @@ import 'package:resman_mobile_customer/src/enums/permission.dart';
 import 'package:resman_mobile_customer/src/models/userModel.dart';
 import 'package:resman_mobile_customer/src/repositories/repository.dart';
 import 'package:resman_mobile_customer/src/screens/storeSelectionScreen/storeSelectionScreen.dart'
-    show Store, StoreSelectionScreen;
+    show StoreSelectionScreen;
 import 'package:resman_mobile_customer/src/utils/textStyles.dart';
 import 'package:resman_mobile_customer/src/widgets/errorIndicator.dart';
 import 'package:resman_mobile_customer/src/widgets/loadingIndicator.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../blocs/authenticationBloc/bloc.dart';
 import '../../blocs/authenticationBloc/event.dart';

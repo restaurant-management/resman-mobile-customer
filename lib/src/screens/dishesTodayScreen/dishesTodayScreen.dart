@@ -86,7 +86,7 @@ class _DishesTodayScreenState extends State<DishesTodayScreen> {
                     padding: const EdgeInsets.only(top: 20),
                     child: Column(
                       children: <Widget>[
-                        Text(state.error.split(':')[1]),
+                        Text(state.error),
                         FlatButton(
                           child: Text('Tải lại'),
                           onPressed: () {

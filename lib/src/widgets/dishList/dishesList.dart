@@ -34,20 +34,28 @@ class _DishesListState extends State<DishesList> {
       rows.add(SizedBox(
         height: 10,
       ));
-      rows.add(Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: <Widget>[
-          DishItemCard(
-            dailyDish: listDailyDish[i],
-          ),
-          i + 1 < listDailyDish.length
-              ? DishItemCard(
-                  dailyDish: listDailyDish[i + 1],
-                )
-              : Container(
-                  width: MediaQuery.of(context).size.width / 2.2,
-                ),
-        ],
+      rows.add(Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[
+            Expanded(
+              flex: 1,
+              child: DishItemCard(
+                dailyDish: listDailyDish[i],
+              ),
+            ),
+            SizedBox(width: 10),
+            Expanded(
+              flex: 1,
+              child: i + 1 < listDailyDish.length
+                  ? DishItemCard(
+                      dailyDish: listDailyDish[i + 1],
+                    )
+                  : Container(),
+            ),
+          ],
+        ),
       ));
     }
     rows.add(SizedBox(

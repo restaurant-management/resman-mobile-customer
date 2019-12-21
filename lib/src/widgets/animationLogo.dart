@@ -5,7 +5,9 @@ class AnimationLogo extends StatefulWidget {
   final VoidCallback onAnimationCompleted;
   final int animationTime;
 
-  const AnimationLogo({Key key, this.onAnimationCompleted, this.animationTime = 2000}) : super(key: key);
+  const AnimationLogo(
+      {Key key, this.onAnimationCompleted, this.animationTime = 2000})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -21,14 +23,14 @@ class AnimationLogoState extends State<AnimationLogo>
   @override
   void initState() {
     super.initState();
-    controller =
-        AnimationController(duration: Duration(milliseconds: widget.animationTime), vsync: this);
+    controller = AnimationController(
+        duration: Duration(milliseconds: widget.animationTime), vsync: this);
     animation = CurvedAnimation(parent: controller, curve: Curves.easeIn)
-    ..addStatusListener((state){
-      if(state == AnimationStatus.completed){
-        widget.onAnimationCompleted?.call();
-      }
-    });
+      ..addStatusListener((state) {
+        if (state == AnimationStatus.completed) {
+          widget.onAnimationCompleted?.call();
+        }
+      });
     _playAnimation();
   }
 

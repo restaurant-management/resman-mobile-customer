@@ -68,7 +68,6 @@ class EditProfileState extends State<EditProfileForm> {
   bool isSaving;
   final _birthdayTextFieldController = new TextEditingController();
   final EditProfileBloc _editProfileBloc = EditProfileBloc();
-  double _height = 15;
 
   UserModel get currentUser => widget.currentUser;
 
@@ -327,9 +326,12 @@ class EditProfileState extends State<EditProfileForm> {
                                           CrossAxisAlignment.stretch,
                                       children: <Widget>[
                                         AnimatedContainer(
-                                          height: _height,
+                                          constraints: BoxConstraints(
+                                            maxHeight: 100,
+                                            minHeight: 15,
+                                          ),
                                           duration: Duration(
-                                            milliseconds: 20,
+                                            milliseconds: 200,
                                           ),
                                           child: SingleChildScrollView(
                                             physics: BouncingScrollPhysics(),
@@ -485,10 +487,6 @@ class EditProfileState extends State<EditProfileForm> {
                               if (_formKey.currentState.validate()) {
                                 setState(() {
                                   _address.add(_value);
-                                  _height = _height + 25;
-                                  if (_height > 100) {
-                                    _height = 100;
-                                  }
                                 });
                                 Navigator.pop(context);
                               }
@@ -527,12 +525,8 @@ class EditProfileState extends State<EditProfileForm> {
                     minSize: 0,
                     child: Icon(Icons.indeterminate_check_box),
                     onPressed: () {
-                      _address.removeAt(index);
                       setState(() {
-                        _height = _height - 25;
-                        if (_height < 15) {
-                          _height = 15;
-                        }
+                        _address.removeAt(index);
                       });
                     },
                   ),

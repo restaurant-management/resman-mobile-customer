@@ -33,7 +33,6 @@ class EditProfileBloc extends Bloc<EditProfileBlocEvent, EditProfileBlocState> {
           event.newBirthday, event.newEmail);
       try {
         var savedUser = await _repository.saveProfile(
-            event.currentUser,
             event.newFullName,
             event.newEmail,
             event.newBirthday,

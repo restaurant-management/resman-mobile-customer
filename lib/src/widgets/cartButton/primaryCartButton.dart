@@ -48,6 +48,9 @@ class _PrimaryCartButtonState extends State<PrimaryCartButton> {
                   ? widget.color
                   : Theme.of(context).colorScheme.onPrimary,
             ),
+            onPressed: () {
+              Scaffold.of(context).openEndDrawer();
+            },
           ),
           Positioned(
             top: 5,

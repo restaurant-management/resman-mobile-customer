@@ -20,15 +20,15 @@ class DishModal extends Equatable {
 
   int get price => _price;
 
-  DishModal.fromJson(Map<String, dynamic> parsedJson) {
-    _dishId = parsedJson['dishId'];
-    _name = parsedJson['name'];
-    _description = parsedJson['description'];
-    _images = (parsedJson['images'] as List<dynamic>)
+  DishModal.fromJson(Map<String, dynamic> json) {
+    _dishId = int.tryParse(json['id'].toString()) ?? json['id'];
+    _name = json['name'];
+    _description = json['description'];
+    _images = (json['images'] as List<dynamic>)
         .map((e) => e.toString())
         .toList();
-    _defaultPrice = parsedJson['defaultPrice'];
-    _price = parsedJson['price'];
+    _defaultPrice = json['defaultPrice'];
+    _price = json['price'];
   }
 
   @override

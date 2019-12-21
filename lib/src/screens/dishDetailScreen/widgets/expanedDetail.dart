@@ -4,27 +4,32 @@ class ExpandedDetail extends StatefulWidget {
   final Widget child;
   final String title;
   final bool expand;
+  final Function onFirstOpen;
+  final Function onOpen;
 
-  const ExpandedDetail({Key key, this.expand = false, this.child, @required this.title})
+  const ExpandedDetail(
+      {Key key,
+      this.expand = false,
+      this.child,
+      @required this.title,
+      this.onFirstOpen,
+      this.onOpen})
       : super(key: key);
 
   @override
-  State<StatefulWidget> createState() =>
-      ExpandedDetailState(child, expand, title);
+  State<StatefulWidget> createState() => ExpandedDetailState();
 }
 
 class ExpandedDetailState extends State<ExpandedDetail> {
-  final Widget child;
-  final bool expand;
-  final String title;
-
   bool expanded;
+  bool firstOpen;
 
-  ExpandedDetailState(this.child, this.expand, this.title);
+  ExpandedDetailState();
 
   @override
   void initState() {
-    expanded = expand;
+    expanded = widget.expand;
+    firstOpen = widget.expand ? false : true;
     super.initState();
   }
 
@@ -37,23 +42,32 @@ class ExpandedDetailState extends State<ExpandedDetail> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Text(
-                title,
+                widget.title,
                 style: TextStyle(color: Colors.black, fontSize: 18),
               ),
               Icon(
-                !expanded ? Icons.keyboard_arrow_left : Icons.keyboard_arrow_down,
+                !expanded
+                    ? Icons.keyboard_arrow_left
+                    : Icons.keyboard_arrow_down,
                 color: Colors.black,
               ),
             ],
           ),
           onPressed: () {
+            if (firstOpen) {
+              widget.onFirstOpen?.call();
+            }
+            if (!expanded) {
+              widget.onOpen?.call();
+            }
             setState(() {
               expanded = !expanded;
+              firstOpen = false;
             });
           },
         ),
         ExpandedSection(
-          child: child,
+          child: widget.child,
           expand: expanded,
         ),
       ],
@@ -95,7 +109,7 @@ class _ExpandedSectionState extends State<ExpandedSection>
         setState(() {});
       });
 
-    if(widget.expand) expandController.forward();
+    if (widget.expand) expandController.forward();
   }
 
   @override

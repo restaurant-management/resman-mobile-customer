@@ -23,6 +23,7 @@ class _AddCartButtonState extends State<AddCartButton> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return BlocListener(
       bloc: _cartBloc,
       listener: (BuildContext context, state) {
@@ -31,8 +32,10 @@ class _AddCartButtonState extends State<AddCartButton> {
             isCreating = true;
           });
         else
-          setState(() {
-            isCreating = false;
+          Future.delayed(Duration(seconds: 1)).then((_) {
+            setState(() {
+              isCreating = false;
+            });
           });
       },
       child: MaterialButton(
@@ -45,14 +48,18 @@ class _AddCartButtonState extends State<AddCartButton> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            isCreating
-                ? CircularProgressIndicator(
-                    backgroundColor: Colors.white,
-                  )
-                : Icon(
-                    Icons.add_shopping_cart,
-                    color: Colors.white,
-                  ),
+            SizedBox(
+              width: 30,
+              height: 30,
+              child: isCreating
+                  ? CircularProgressIndicator(
+                      backgroundColor: colorScheme.onPrimary,
+                    )
+                  : Icon(
+                      Icons.add_shopping_cart,
+                      color: Colors.white,
+                    ),
+            ),
             SizedBox(
               width: 8,
             ),

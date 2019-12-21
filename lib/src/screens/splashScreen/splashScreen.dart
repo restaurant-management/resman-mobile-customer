@@ -18,6 +18,8 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   AuthenticationBloc authenticationBloc;
 
+  bool _showLoading = false;
+
   @override
   void initState() {
     authenticationBloc = AuthenticationBloc();
@@ -27,6 +29,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       alignment: Alignment.center,
       decoration: new BoxDecoration(
@@ -35,32 +38,50 @@ class _SplashScreenState extends State<SplashScreen> {
           end: Alignment.bottomLeft,
           stops: [0.1, 0.9],
           colors: [
-            Color(0xFFFC5C7D),
-            Color(0xFF6A82FB),
+            colorScheme.primaryVariant,
+            colorScheme.primary,
           ],
         ),
       ),
       padding: EdgeInsets.symmetric(horizontal: 90.0),
-      child: Hero(
-        tag: 'HeroLogoImage',
-        child: AnimationLogo(
-          animationTime: 1000,
-          onAnimationCompleted: () async {
-            if (await Repository().getStore() != null) {
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(
-                  builder: (BuildContext context) => DishesTodayScreen(),
-                ),
-              );
-            } else {
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(
-                  builder: (BuildContext context) => StoreSelectionScreen(),
-                ),
-              );
-            }
-          },
-        ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Hero(
+            tag: 'HeroLogoImage',
+            child: AnimationLogo(
+              animationTime: 1000,
+              onAnimationCompleted: () async {
+                setState(() {
+                  _showLoading = true;
+                });
+                if (await Repository().getStore() != null) {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (BuildContext context) => DishesTodayScreen(),
+                    ),
+                  );
+                } else {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (BuildContext context) => StoreSelectionScreen(),
+                    ),
+                  );
+                }
+              },
+            ),
+          ),
+          SizedBox(height: 10),
+          SizedBox(
+            height: 5,
+            width: 100,
+            child: _showLoading
+                ? LinearProgressIndicator(
+                    backgroundColor: colorScheme.onPrimary,
+                  )
+                : Container(),
+          )
+        ],
       ),
     );
   }

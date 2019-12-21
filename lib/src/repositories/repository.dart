@@ -6,6 +6,7 @@ import 'package:meta/meta.dart';
 import 'package:resman_mobile_customer/src/models/billModel.dart';
 import 'package:resman_mobile_customer/src/models/cartDishModel.dart';
 import 'package:resman_mobile_customer/src/models/cartModel.dart';
+import 'package:resman_mobile_customer/src/models/comment.dart';
 import 'package:resman_mobile_customer/src/models/storeModal.dart';
 import 'package:resman_mobile_customer/src/repositories/dataProviders/storeProvider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -236,12 +237,12 @@ class Repository {
     return await taskSnapshot.ref.getDownloadURL();
   }
 
-  Future<UserModel> saveProfile(UserModel user, String fullName, String email,
-      DateTime birthday, String avatar) async {
+  Future<UserModel> saveProfile(
+      String fullName, String email, DateTime birthday, String avatar) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString(PrepsTokenKey);
     return await _userProvider.editUserProfile(
-        token, user.username, email, fullName, birthday, avatar);
+        token, email, fullName, birthday, avatar);
   }
 
   Future changeUserPassword(
@@ -277,5 +278,27 @@ class Repository {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _currentStore = store;
     prefs.setInt(PrepsStoreId, store.id);
+  }
+
+  Future<List<Comment>> getCommentsOfDish(int dishId) async {
+    return await _dishProvider.getComments(dishId);
+  }
+
+  Future<Comment> createComment(int dishId, String content, double rating) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString(PrepsTokenKey);
+    return await _dishProvider.createComment(token, dishId, content, rating);
+  }
+
+  Future<String> favouriteDish(int dishId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString(PrepsTokenKey);
+    return await _dishProvider.favourite(token, dishId);
+  }
+
+  Future<String> unFavouriteDish(int dishId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString(PrepsTokenKey);
+    return await _dishProvider.unFavourite(token, dishId);
   }
 }

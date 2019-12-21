@@ -2,12 +2,32 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:resman_mobile_customer/src/utils/textStyles.dart';
 
 class LoadingIndicator extends StatelessWidget {
+  final String message;
+  final Color messageColor;
+
+  const LoadingIndicator({Key key, this.message, this.messageColor})
+      : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: _buildRandom(context),
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            _buildRandom(context),
+            SizedBox(height: 10),
+            message != null ? Text(
+              message,
+              style: TextStyles.h4.merge(TextStyle(color: messageColor)),
+            ) : Container()
+          ],
+        ),
+      ),
     );
   }
 
