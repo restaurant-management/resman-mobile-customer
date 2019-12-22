@@ -1,4 +1,5 @@
 import 'package:resman_mobile_customer/src/models/address.dart';
+import 'package:resman_mobile_customer/src/models/cartDishModel.dart';
 
 class GraphQuery {
   static String me = '''
@@ -149,6 +150,49 @@ class GraphQuery {
     return '''
     mutation {
       unFavouriteDish(id: $dishId)
+    }
+    ''';
+  }
+
+  static String createDeliveryBill(
+      int addressId, List<CartDishModel> cartDishModels, int storeId,
+      {String discountCode, String note, String voucherCode}) {
+    return '''
+    mutation {
+      createDeliveryBill(
+        addressId: $addressId
+        dishIds: ${cartDishModels.map((e) => e.dishId).toList().toString()}
+        dishNotes: ${cartDishModels.map((e) => e.note).toList().toString()}
+        storeId: $storeId,
+        dishQuantities: ${cartDishModels.map((e) => e.quantity).toList().toString()}
+        discountCode: "$discountCode"
+        note: "$note"
+        voucherCode: "$voucherCode"
+      ) {
+        id
+        createAt
+        prepareAt
+        preparedAt
+        shipAt
+        collectAt
+        collectValue
+        address
+        longitude
+        latitude
+        rating
+        note
+        dishes {
+          dish {
+            id
+            name
+            description
+            images
+            defaultPrice
+          }
+          quantity
+          price
+        }
+      }
     }
     ''';
   }

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -168,15 +169,16 @@ class EditProfileState extends State<EditProfileForm> {
                           _newAvatar,
                           fit: BoxFit.cover,
                         )
-                      : _oldAvatar != null
-                          ? Image.network(
-                              _oldAvatar,
-                              fit: BoxFit.cover,
-                            )
-                          : Image.asset(
+                      : CachedNetworkImage(
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) {
+                            return Image.asset(
                               'assets/images/default-avatar.jpg',
                               fit: BoxFit.cover,
-                            ),
+                            );
+                          },
+                          imageUrl: _oldAvatar,
+                        ),
                 ),
               ),
               Positioned(

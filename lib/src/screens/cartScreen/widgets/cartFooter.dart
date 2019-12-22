@@ -3,7 +3,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_widgets/gradient_widgets.dart';
 import 'package:resman_mobile_customer/src/blocs/cartBloc/bloc.dart';
-import 'package:resman_mobile_customer/src/blocs/cartBloc/event.dart';
 import 'package:resman_mobile_customer/src/blocs/cartBloc/state.dart';
 import 'package:resman_mobile_customer/src/screens/customerCreateBillScreen/customerCreateBillScreen.dart';
 
@@ -50,7 +49,7 @@ class _CartFooterState extends State<CartFooter> {
         color: Theme.of(context).colorScheme.background,
         child: SingleChildScrollView(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               SummaryBill(),
               Padding(
@@ -73,7 +72,6 @@ class _CartFooterState extends State<CartFooter> {
                     end: Alignment.topLeft,
                   ),
                   callback: () {
-//                    if (!_isCreating) _cartBloc.dispatch(CreateBillFromCart());
                     Navigator.push(
                       context,
                       MaterialPageRoute(

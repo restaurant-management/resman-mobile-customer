@@ -56,7 +56,7 @@ class BackAppBar extends StatelessWidget implements PreferredSizeWidget {
           : Container(),
       title: title == null
           ? Text(
-              'Res Man',
+              'Resman',
               style: TextStyle(
                   color: Theme.of(context).colorScheme.onPrimary,
                   fontSize: 40,

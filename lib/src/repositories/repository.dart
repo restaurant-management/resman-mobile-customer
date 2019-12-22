@@ -129,11 +129,20 @@ class Repository {
   }
 
   /// Return bill model.
-  Future<BillModel> createBill(
-      List<int> dishIds, List<int> quantities, List<int> prices) async {
+  Future<BillModel> createBill() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString(PrepsTokenKey);
-    return await _billProvider.createBill(token, dishIds, quantities, prices);
+    final storeId = prefs.getInt(PrepsStoreId);
+
+    return await _billProvider.createBill(
+      token,
+      currentCart.addressId,
+      currentCart.listDishes,
+      storeId,
+      discountCode: currentCart.discountCode,
+      note: currentCart.note,
+      voucherCode: currentCart.voucherCode,
+    );
   }
 
   Future<BillModel> updatePaidBillStatus(int billId) async {
@@ -180,7 +189,8 @@ class Repository {
 
   Future<void> saveCart() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString(PrepsCart, jsonEncode(_currentCart.toJson()));
+    final json = jsonEncode(_currentCart.toJson());
+    await prefs.setString(PrepsCart, json);
   }
 
   CartDishModel addDishIntoCart(DailyDish dish) {
@@ -218,7 +228,12 @@ class Repository {
   Future<void> getCart() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String stringCart = prefs.getString(PrepsCart);
-    _currentCart = CartModel.fromJson(jsonDecode(stringCart));
+    if (stringCart == null) {
+      _currentCart = CartModel.empty();
+    } else {
+      final json = jsonDecode(stringCart);
+      _currentCart = CartModel.fromJson(json);
+    }
   }
 
   Future<void> clearCart() async {
@@ -238,11 +253,15 @@ class Repository {
   }
 
   Future<UserModel> saveProfile(
-      String fullName, String email, DateTime birthday, String avatar) async {
+      {String fullName, String email, DateTime birthday, String avatar}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString(PrepsTokenKey);
     return await _userProvider.editUserProfile(
-        token, email, fullName, birthday, avatar);
+        avatar: avatar,
+        birthday: birthday,
+        email: email,
+        fullName: fullName,
+        token: token);
   }
 
   Future changeUserPassword(
@@ -284,7 +303,8 @@ class Repository {
     return await _dishProvider.getComments(dishId);
   }
 
-  Future<Comment> createComment(int dishId, String content, double rating) async {
+  Future<Comment> createComment(
+      int dishId, String content, double rating) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString(PrepsTokenKey);
     return await _dishProvider.createComment(token, dishId, content, rating);

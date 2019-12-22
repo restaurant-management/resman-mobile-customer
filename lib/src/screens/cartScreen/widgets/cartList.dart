@@ -7,8 +7,6 @@ import 'package:resman_mobile_customer/src/blocs/cartBloc/event.dart';
 import 'package:resman_mobile_customer/src/blocs/cartBloc/state.dart';
 import 'package:resman_mobile_customer/src/models/cartDishModel.dart';
 import 'package:resman_mobile_customer/src/screens/billDetailScreen/billDetailScreen.dart';
-import 'package:resman_mobile_customer/src/utils/textStyles.dart';
-import 'package:resman_mobile_customer/src/widgets/errorIndicator.dart';
 import 'package:resman_mobile_customer/src/widgets/loadingIndicator.dart';
 
 import 'cartItem.dart';

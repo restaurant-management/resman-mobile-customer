@@ -1,27 +1,32 @@
+import 'dart:convert';
+
 import 'cartDishModel.dart';
 
 class CartModel {
-  List<CartDishModel> _listDishes;
+  List<CartDishModel> listDishes = [];
+  String note;
+  String voucherCode;
+  String discountCode;
+  int addressId;
 
-  List<CartDishModel> get listDishes => _listDishes;
-
-  CartModel.fromJson(List<dynamic> parseJson) {
-    _listDishes = [];
-    for (int i = 0; i < parseJson.length; i++) {
-      var dish = CartDishModel.fromJson(parseJson[i]);
-      _listDishes.add(dish);
-    }
+  CartModel.fromJson(Map<String, dynamic> json) {
+    listDishes = (json['listDishes'] as List<dynamic>)
+        .map((e) => CartDishModel.fromJson(e))
+        .toList();
+    note = json['note'] ?? '';
   }
 
   CartModel.empty() {
-    _listDishes = [];
+    listDishes = [];
+    note = '';
+    voucherCode = '';
+    discountCode = '';
+    addressId = null;
   }
 
-  List<Map<String, dynamic>> toJson() {
-    List<Map<String, dynamic>> result = [];
-    for (int i = 0; i < _listDishes.length; i++) {
-      result.add(_listDishes[i].toJson());
-    }
-    return result;
-  }
+  // Note: Don't save code and address because of checking valid.
+  Map<String, dynamic> toJson() => {
+        'listDishes': listDishes.map((e) => e.toJson()).toList(),
+        'note': note
+      };
 }

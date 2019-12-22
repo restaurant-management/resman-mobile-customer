@@ -1,9 +1,15 @@
 import 'package:dashed_container/dashed_container.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:resman_mobile_customer/src/blocs/cartBloc/bloc.dart';
+import 'package:resman_mobile_customer/src/blocs/cartBloc/event.dart';
+import 'package:resman_mobile_customer/src/blocs/cartBloc/state.dart';
 import 'package:resman_mobile_customer/src/fakeAddress.dart';
 import 'package:resman_mobile_customer/src/fakeVoucher.dart';
-import 'package:resman_mobile_customer/src/screens/customerCreateBillScreen/billDishItem.dart';
+import 'package:resman_mobile_customer/src/models/cartDishModel.dart';
+import 'package:resman_mobile_customer/src/screens/cartScreen/widgets/cartItem.dart';
+import 'package:resman_mobile_customer/src/screens/dishesTodayScreen/dishesTodayScreen.dart';
 import 'package:resman_mobile_customer/src/utils/gradientColor.dart';
 import 'package:resman_mobile_customer/src/utils/textStyles.dart';
 import 'package:resman_mobile_customer/src/widgets/AppBars/backAppBar.dart';
@@ -11,27 +17,26 @@ import 'package:resman_mobile_customer/src/widgets/bottomSheet/showAddressBottom
 import 'package:resman_mobile_customer/src/widgets/bottomSheet/showVoucherBottomSheet.dart';
 import 'package:resman_mobile_customer/src/widgets/drawerScaffold.dart';
 
-import '../../FakeBillItem.dart';
-
 class CustomerCreateBillScreen extends StatefulWidget {
   @override
   _CustomerCreateBillScreen createState() => _CustomerCreateBillScreen();
 }
 
 class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
-  List<DishItem> dishItems;
+  String note;
+  List<CartDishModel> dishItems = [];
   Address billAddress;
   Voucher billVoucher;
   List<Voucher> vouchers;
-  String _value = '';
+  String _discountCode = '';
   bool addSuccess = false;
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  CartBloc _cartBloc = CartBloc();
+
   @override
   void initState() {
-    dishItems = FakeBillItem.dishItems;
-    vouchers = FakeVoucher.vouchers;
     super.initState();
   }
 
@@ -41,43 +46,54 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
     return DrawerScaffold(
       key: _scaffoldKey,
       appBar: BackAppBar(
+        title: 'Tạo hóa đơn',
         showShoppingCart: false,
       ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 8),
-        child: SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
-          child: Column(
-            children: <Widget>[
-              Container(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: TextField(
-                    style: TextStyles.h5
-                        .merge(TextStyle(color: colorScheme.onBackground)),
-                    scrollPhysics: BouncingScrollPhysics(),
-                    maxLines: 3,
-                    decoration: InputDecoration(
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-                      filled: true,
-                      fillColor: colorScheme.surface,
-                      hintText: "Ghi chú",
-                      hintStyle: TextStyle(
-                        color: colorScheme.onSurface,
-                        fontSize: 16,
-                      ),
-                      border: new OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                        borderSide: BorderSide(width: 0),
-                      ),
+      body: BlocListener(
+        bloc: _cartBloc,
+        listener: (context, state) {
+          if (state is CartBlocFetched || state is CartBlocSaved) {
+            setState(() {
+              note = _cartBloc.currentCart.note;
+              dishItems = _cartBloc.currentCart.listDishes;
+            });
+          } else if (state is CartBlocCreatedBill) {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (BuildContext context) => DishesTodayScreen(),
+              ),
+            );
+          }
+        },
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          child: SingleChildScrollView(
+            physics: BouncingScrollPhysics(),
+            child: Column(
+              children: <Widget>[
+                TextField(
+                  style: TextStyles.h5
+                      .merge(TextStyle(color: colorScheme.onBackground)),
+                  scrollPhysics: BouncingScrollPhysics(),
+                  maxLines: 3,
+                  decoration: InputDecoration(
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                    filled: true,
+                    fillColor: colorScheme.surface,
+                    hintText: "Ghi chú",
+                    hintStyle: TextStyle(
+                      color: colorScheme.onSurface,
+                      fontSize: 16,
+                    ),
+                    border: new OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      borderSide: BorderSide(width: 0),
                     ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Container(
+                SizedBox(height: 10),
+                Container(
                   decoration: BoxDecoration(
                     border: Border.all(
                       color: colorScheme.onSurface,
@@ -93,10 +109,8 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                     child: _buildListDishItem(),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Container(
+                SizedBox(height: 10),
+                Container(
                   decoration: BoxDecoration(
                     border: Border.all(
                       color: colorScheme.onSurface,
@@ -114,7 +128,7 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                'Discount:',
+                                'Mã giảm giá:',
                                 style: TextStyles.h3.merge(
                                   TextStyle(color: colorScheme.onBackground),
                                 ),
@@ -125,9 +139,9 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 8),
-                              child: _value.isNotEmpty
+                              child: _discountCode.isNotEmpty
                                   ? Text(
-                                      _value,
+                                      _discountCode,
                                       style: TextStyles.h5.merge(
                                         TextStyle(color: colorScheme.onSurface),
                                       ),
@@ -135,7 +149,7 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                                       textAlign: TextAlign.left,
                                     )
                                   : Text(
-                                      'No discount code provided!',
+                                      'Chưa nhập mã giảm giá!',
                                       style: TextStyles.h5.merge(
                                         TextStyle(color: colorScheme.onSurface),
                                       ),
@@ -150,7 +164,7 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                         padding: const EdgeInsets.fromLTRB(0, 5, 10, 30),
                         child: CupertinoButton(
                           child: Text(
-                            'Add',
+                            'Thêm',
                             style: TextStyles.h5.merge(
                               TextStyle(color: colorScheme.primary),
                             ),
@@ -169,10 +183,8 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                     ],
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Container(
+                SizedBox(height: 10),
+                Container(
                   decoration: BoxDecoration(
                     border: Border.all(
                       color: colorScheme.onSurface,
@@ -211,7 +223,7 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                             padding: const EdgeInsets.fromLTRB(10, 8, 10, 0),
                             child: CupertinoButton(
                               child: Text(
-                                'change',
+                                'Đổi',
                                 style: TextStyles.h5.merge(
                                   TextStyle(color: colorScheme.primary),
                                 ),
@@ -234,7 +246,7 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                             left: 8, top: 5, right: 8, bottom: 8),
                         child: Text(
                           billVoucher == null
-                              ? 'No voucher is provided!'
+                              ? 'Chưa chọn voucher!'
                               : billVoucher.name,
                           style: TextStyles.h5.merge(
                             TextStyle(color: colorScheme.onSurface),
@@ -246,10 +258,8 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                     ],
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Container(
+                SizedBox(height: 10),
+                Container(
                   decoration: BoxDecoration(
                     border: Border.all(
                       color: colorScheme.onSurface,
@@ -267,7 +277,7 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                'Address:',
+                                'Địa chỉ:',
                                 style: TextStyles.h3.merge(
                                   TextStyle(color: colorScheme.onBackground),
                                 ),
@@ -280,7 +290,7 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                                   const EdgeInsets.symmetric(horizontal: 8),
                               child: Text(
                                 billAddress == null
-                                    ? 'No address is provided!'
+                                    ? 'Chưa chọn địa chỉ!'
                                     : billAddress.address,
                                 style: TextStyles.h5.merge(
                                   TextStyle(color: colorScheme.onSurface),
@@ -296,7 +306,7 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                         padding: const EdgeInsets.fromLTRB(0, 5, 10, 30),
                         child: CupertinoButton(
                           child: Text(
-                            'Change',
+                            'Đổi',
                             style: TextStyles.h5.merge(
                               TextStyle(color: colorScheme.primary),
                             ),
@@ -317,10 +327,8 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                     ],
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: DashedContainer(
+                SizedBox(height: 10),
+                DashedContainer(
                   dashColor: colorScheme.primary,
                   borderRadius: 15.0,
                   child: Padding(
@@ -331,7 +339,7 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                         Padding(
                           padding: const EdgeInsets.fromLTRB(8, 0, 20, 15),
                           child: Text(
-                            'Total amount:',
+                            'Thành tiền:',
                             style: TextStyles.h3.merge(
                               TextStyle(color: colorScheme.onBackground),
                             ),
@@ -356,10 +364,8 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                     ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: 8),
-                child: Container(
+                SizedBox(height: 10),
+                Container(
                   decoration: BoxDecoration(
                     gradient: GradientColor.of(context).primaryGradient,
                     borderRadius: const BorderRadius.all(Radius.circular(10.0)),
@@ -379,11 +385,8 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                     onPressed: () {},
                   ),
                 ),
-              ),
-              SizedBox(
-                height: 8,
-              )
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -443,7 +446,7 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                       onSaved: (value) {
                         print(value);
                         setState(() {
-                          _value = value;
+                          _discountCode = value;
                         });
                       },
                     ),
@@ -540,15 +543,31 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
               SizedBox(
                 height: 8,
               ),
-              BillDishItem(
-                dishItem: dishItems[index],
+              Dismissible(
+                key: Key(index.toString()),
+                onDismissed: (direct) {
+                  onDismissed(dishItems[index].dishId);
+                },
+                child: CartItem(
+                  cartDish: dishItems[index],
+                ),
               ),
             ],
           );
-        return BillDishItem(
-          dishItem: dishItems[index],
+        return Dismissible(
+          key: Key(index.toString()),
+          onDismissed: (direct) {
+            onDismissed(dishItems[index].dishId);
+          },
+          child: CartItem(
+            cartDish: dishItems[index],
+          ),
         );
       },
     );
+  }
+
+  void onDismissed(int dishId) {
+    _cartBloc.dispatch(RemoveDishFromCart(dishId));
   }
 }

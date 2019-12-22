@@ -55,7 +55,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 setState(() {
                   _showLoading = true;
                 });
-                if (await Repository().getStore() != null) {
+                if ((await Repository().getStore()) != null) {
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
                       builder: (BuildContext context) => DishesTodayScreen(),
