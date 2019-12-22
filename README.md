@@ -1,4 +1,6 @@
-# resman_mobile_customer
+# Resman Mobile Customer
+[![Build Status](https://github.com/restaurant-management/resman-mobile-customer/workflows/Release%20APK/badge.svg?branch=master)](https://github.com/restaurant-management/resman-mobile-customer/actions?workflow=Release%20APK)
+[![Build Status](https://github.com/restaurant-management/resman-mobile-customer/workflows/Test%20build%20APK/badge.svg?branch=master)](https://github.com/restaurant-management/resman-mobile-customer/actions?workflow=Test%20build%20APK)
 
 Mobile application for Restaurant Management project
 
