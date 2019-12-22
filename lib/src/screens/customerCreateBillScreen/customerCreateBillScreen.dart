@@ -66,11 +66,12 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
           }
         },
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          padding: EdgeInsets.symmetric(horizontal: 12),
           child: SingleChildScrollView(
             physics: BouncingScrollPhysics(),
             child: Column(
               children: <Widget>[
+                SizedBox(height: 10),
                 TextField(
                   style: TextStyles.h5
                       .merge(TextStyle(color: colorScheme.onBackground)),
@@ -102,12 +103,7 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                     borderRadius: BorderRadius.all(Radius.circular(10)),
                   ),
                   height: 300,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                    ),
-                    child: _buildListDishItem(),
-                  ),
+                  child: _buildListDishItem(),
                 ),
                 SizedBox(height: 10),
                 Container(
@@ -385,6 +381,7 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                     onPressed: () {},
                   ),
                 ),
+                SizedBox(height: 10)
               ],
             ),
           ),
@@ -550,6 +547,7 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                 },
                 child: CartItem(
                   cartDish: dishItems[index],
+                  borderRadius: 10,
                 ),
               ),
             ],
@@ -561,6 +559,7 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
           },
           child: CartItem(
             cartDish: dishItems[index],
+            borderRadius: 10,
           ),
         );
       },
