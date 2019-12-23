@@ -12,6 +12,7 @@ import 'package:resman_mobile_customer/src/repositories/repository.dart';
 import 'package:resman_mobile_customer/src/screens/storeSelectionScreen/storeSelectionScreen.dart'
     show StoreSelectionScreen;
 import 'package:resman_mobile_customer/src/utils/textStyles.dart';
+import 'package:resman_mobile_customer/src/widgets/cacheImage.dart';
 import 'package:resman_mobile_customer/src/widgets/errorIndicator.dart';
 import 'package:resman_mobile_customer/src/widgets/loadingIndicator.dart';
 
@@ -52,9 +53,8 @@ class _ProfileDrawerState extends State<ProfileDrawer> {
     Repository().getStore().then((value) {
       if (value != null) {
         setState(() {
-          storeLogo = CircleAvatar(
-            radius: 40,
-            backgroundImage: NetworkImage(value.logo),
+          storeLogo = ClipOval(
+            child: CacheImage(value.logo),
           );
           storeName = value.name;
         });
@@ -150,16 +150,10 @@ class _ProfileDrawerState extends State<ProfileDrawer> {
                     child: Hero(
                       tag: "avatarHero",
                       child: ClipOval(
-                        child: user?.avatar != null
-                            ? FadeInImage.assetNetwork(
-                                placeholder: 'assets/images/default-avatar.jpg',
-                                fit: BoxFit.cover,
-                                image: user?.avatar,
-                              )
-                            : Image.asset(
-                                'assets/images/default-avatar.jpg',
-                                fit: BoxFit.cover,
-                              ),
+                        child: CacheImage(
+                          user?.avatar ?? '',
+                          avatarPlaceholder: true,
+                        ),
                       ),
                     ),
                   ),
@@ -334,15 +328,5 @@ class _ProfileDrawerState extends State<ProfileDrawer> {
           },
         ),
       ];
-  }
-
-  bool haveUpdateBillStatusPermission(List<Permission> permissions) {
-    return permissions.indexOf(Permission.billManagement) >= 0 ||
-        permissions.indexOf(Permission.updateCompleteBillStatus) >= 0 ||
-        permissions.indexOf(Permission.updateDeliveringBillStatus) >= 0 ||
-        permissions.indexOf(Permission.updatePrepareDoneBillStatus) >= 0 ||
-        permissions.indexOf(Permission.updatePreparingBillStatus) >= 0 ||
-        permissions.indexOf(Permission.updateShippingBillStatus) >= 0 ||
-        permissions.indexOf(Permission.updatePaidBillStatus) >= 0;
   }
 }

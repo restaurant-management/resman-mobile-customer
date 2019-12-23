@@ -1,11 +1,13 @@
 import 'package:bloc/bloc.dart';
 import 'package:resman_mobile_customer/src/blocs/currentUserBloc/bloc.dart';
 import 'package:resman_mobile_customer/src/blocs/currentUserBloc/event.dart';
+import 'package:resman_mobile_customer/src/blocs/favouriteDishesBloc.dart';
 import 'package:resman_mobile_customer/src/repositories/repository.dart';
 
 class FavouriteBloc extends Bloc<FavouriteBlocEvent, FavouriteBlocState> {
   Repository _repository = Repository();
   CurrentUserBloc _currentUserBloc = CurrentUserBloc();
+  FavouriteDishesBloc _favouriteDishesBloc = FavouriteDishesBloc();
 
   @override
   FavouriteBlocState get initialState => FavouriteBlocInitialize();
@@ -18,6 +20,8 @@ class FavouriteBloc extends Bloc<FavouriteBlocEvent, FavouriteBlocState> {
         yield FavouriteBlocSuccess(
             await _repository.favouriteDish(event.dishId));
         _currentUserBloc.dispatch(FetchCurrentUserProfile());
+        _favouriteDishesBloc.dispatch(FetchFavouriteDishes());
+        
       } catch (e) {
         yield FavouriteBlocFailure(e.toString());
       }
@@ -29,6 +33,7 @@ class FavouriteBloc extends Bloc<FavouriteBlocEvent, FavouriteBlocState> {
         yield FavouriteBlocSuccess(
             await _repository.unFavouriteDish(event.dishId));
         _currentUserBloc.dispatch(FetchCurrentUserProfile());
+        _favouriteDishesBloc.dispatch(FetchFavouriteDishes());
       } catch (e) {
         yield FavouriteBlocFailure(e.toString());
       }
