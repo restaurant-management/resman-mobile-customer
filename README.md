@@ -1,6 +1,7 @@
 # Resman Mobile Customer
 [![Build Status](https://github.com/restaurant-management/resman-mobile-customer/workflows/Release%20APK/badge.svg?branch=master)](https://github.com/restaurant-management/resman-mobile-customer/actions?workflow=Release%20APK)
 [![Build Status](https://github.com/restaurant-management/resman-mobile-customer/workflows/Test%20build%20APK/badge.svg?branch=master)](https://github.com/restaurant-management/resman-mobile-customer/actions?workflow=Test%20build%20APK)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Frestaurant-management%2Fresman-mobile-customer.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Frestaurant-management%2Fresman-mobile-customer?ref=badge_shield)
 
 Mobile application for Restaurant Management project
 
@@ -35,3 +36,7 @@ samples, guidance on mobile development, and a full API reference.
 `flutter pub run flutter_launcher_icons:main`
 
 ## Run
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Frestaurant-management%2Fresman-mobile-customer.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Frestaurant-management%2Fresman-mobile-customer?ref=badge_large)
