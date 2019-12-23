@@ -51,29 +51,36 @@ class SummaryBill extends StatelessWidget {
             ),
             Expanded(
               flex: 1,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  bill.discountCode != null
-                      ? Text(
-                          'Mã giảm giá: ${bill.discountCode} (-${bill.discountValue}%)',
-                          style: TextStyle(color: Colors.black),
-                        )
-                      : Container(),
-                  bill.voucherCode != null
-                      ? Text(
-                          'Voucher: -${bill.voucherValue}${bill.voucherIsPercent ? '%' : 'VNĐ'}',
-                          style: TextStyle(color: Colors.black),
-                        )
-                      : Container(),
-                  bill.voucherCode == null && bill.discountCode == null
-                      ? Text(
-                          'Không có mã giảm giá!',
-                          style: TextStyles.h4.merge(
-                              TextStyle(color: colorScheme.onBackground)),
-                        )
-                      : Container(),
-                ],
+              child: SingleChildScrollView(
+                physics: BouncingScrollPhysics(),
+                scrollDirection: Axis.horizontal,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      bill.discountCode != null
+                          ? Text(
+                              'Giảm giá: ${bill.discountCode} (-${bill.discountValue}%)',
+                              style: TextStyle(color: Colors.black),
+                            )
+                          : Container(),
+                      bill.voucherCode != null
+                          ? Text(
+                              'Voucher: -${bill.voucherValue}${bill.voucherIsPercent ? '%' : 'VNĐ'}',
+                              style: TextStyle(color: Colors.black),
+                            )
+                          : Container(),
+                      bill.voucherCode == null && bill.discountCode == null
+                          ? Text(
+                              'Không có mã giảm giá!',
+                              style: TextStyles.h4.merge(
+                                  TextStyle(color: colorScheme.onBackground)),
+                            )
+                          : Container(),
+                    ],
+                  ),
+                ),
               ),
             ),
           ],

@@ -219,6 +219,47 @@ class GraphQuery {
     return query;
   }
 
+  static String deliveryBills() {
+    return ''' 
+    {
+      deliveryBills {
+        id
+        createAt
+        prepareAt
+        preparedAt
+        shipAt
+        collectAt
+        collectValue
+        address
+        voucherCode
+        voucherValue
+        voucherIsPercent
+        discountCode
+        discountValue
+        rating
+        store {
+          id
+        }
+        longitude
+        latitude
+        rating
+        note
+        dishes {
+          dish {
+            id
+            name
+            description
+            images
+            defaultPrice
+          }
+          quantity
+          price
+        }
+      }
+    }
+    ''';
+  }
+
   static String getDiscountCode(String code) {
     return '''
       {

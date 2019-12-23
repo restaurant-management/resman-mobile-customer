@@ -32,9 +32,9 @@ class BillModel extends Equatable {
     collectValue = double.tryParse(json['collectValue'].toString());
     voucherCode = json['voucherCode'];
     voucherValue = double.tryParse(json['voucherValue'].toString());
-    voucherIsPercent = json['voucherIsPercent'];
+    voucherIsPercent = json['voucherIsPercent'] == 1 ? true : false;
     discountCode = json['discountCode'];
-    discountValue = double.tryParse(json['collectValue'].toString());
+    discountValue = double.tryParse(json['discountValue'].toString());
     address = json['address'];
     longitude = double.tryParse(json['longitude'].toString());
     latitude = double.tryParse(json['latitude'].toString());

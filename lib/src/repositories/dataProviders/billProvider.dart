@@ -12,63 +12,32 @@ class BillProvider {
   Client client = Client();
 
   Future<List<BillModel>> getAll(String token) async {
-    Map<String, String> headers = {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Authorization': token
-    };
-    var day = DateFormat('yyyy-MM-dd').format(DateTime.now());
-    final response =
-        await client.get('$apiUrl/api/bills?day=$day', headers: headers);
-    if (response.statusCode == 200) {
-      List<BillModel> result = [];
-      List<dynamic> list = jsonDecode(response.body);
-      for (int i = 0; i < list.length; i++) {
-        var billModel = BillModel.fromJson(list[i]);
-        result.add(billModel);
-      }
-      return result;
-    } else {
-      String message;
-      try {
-        message = jsonDecode(response.body)['message'];
-      } catch (e) {
-        print('Error: $e');
-      }
-      if (message != null && message.isNotEmpty) throw (message);
-      throw ('Có lỗi xảy ra khi tải danh sách hoá đơn.');
-    }
+    final data = await (GraphClient()
+          ..authorization(token)
+          ..addBody(GraphQuery.deliveryBills()))
+        .connect();
+
+    return (data['deliveryBills'] as List<dynamic>)
+        .map((e) => BillModel.fromJson(e))
+        .toList();
   }
 
   Future<List<BillModel>> getAllUserBills(String token, String username) async {
-    Map<String, String> headers = {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Authorization': token
-    };
-    final response =
-        await client.get('$apiUrl/api/bills/user/$username', headers: headers);
-    if (response.statusCode == 200) {
-      List<BillModel> result = [];
-      List<dynamic> list = jsonDecode(response.body);
-      for (int i = 0; i < list.length; i++) {
-        var billModel = BillModel.fromJson(list[i]);
-        result.add(billModel);
-      }
-      return result;
-    } else {
-      String message;
-      try {
-        message = jsonDecode(response.body)['message'];
-      } catch (e) {
-        print('Error: $e');
-      }
-      if (message != null && message.isNotEmpty) throw (message);
-      throw ('Có lỗi xảy ra khi tải danh sách hoá đơn.');
-    }
+    final data = await (GraphClient()
+          ..authorization(token)
+          ..addBody(GraphQuery.deliveryBills()))
+        .connect();
+
+    return (data['deliveryBills'] as List<dynamic>)
+        .map((e) => BillModel.fromJson(e))
+        .toList();
   }
 
   Future<BillModel> createBill(String token, int addressId,
       List<CartDishModel> cartDishModels, int storeId,
-      {String discountCode = '', String note = '', String voucherCode = ''}) async {
+      {String discountCode = '',
+      String note = '',
+      String voucherCode = ''}) async {
     final data = await (GraphClient()
           ..authorization(token)
           ..addBody(GraphQuery.createDeliveryBill(

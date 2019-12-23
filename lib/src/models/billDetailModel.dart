@@ -9,6 +9,8 @@ class BillDetailModel extends Equatable {
   BillDetailModel.fromJson(Map<String, dynamic> parsedJson) {
     quantity = parsedJson['quantity'];
     price = parsedJson['price'] + .0;
-    dish = DishModal.fromJson(parsedJson['dish']);
+    dish = parsedJson['dish'] != null
+        ? DishModal.fromJson(parsedJson['dish'])
+        : null;
   }
 }

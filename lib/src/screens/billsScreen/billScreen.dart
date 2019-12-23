@@ -19,7 +19,7 @@ class BillsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final BillBloc _billBloc = BillBloc(isMyBill: isMyBill);
     return Scaffold(
-      appBar: BackAppBar(showShoppingCart: false),
+      appBar: BackAppBar(showShoppingCart: false, title: 'Hóa đơn của bạn',),
       body: Container(
         color: Theme.of(context).colorScheme.background,
         child: BlocBuilder(
@@ -32,18 +32,19 @@ class BillsScreen extends StatelessWidget {
                 ),
                 bloc: _billBloc,
               );
-            if (state is BillBlocInitialize) {
+            else if (state is BillBlocInitialize) {
               _billBloc.dispatch(FetchAllBill());
               return LoadingIndicator();
-            }
-            if (state is BillBlocFetching) return LoadingIndicator();
-            if (state is BillBlocFetchFailure)
+            } else if (state is BillBlocFetching)
+              return LoadingIndicator();
+            else if (state is BillBlocFetchFailure)
               return ErrorIndicator(
                 message: 'Tải danh sách hoá đơn thất bại!',
                 reloadOnPressed: () {
                   _billBloc.dispatch(FetchAllBill());
                 },
               );
+            return LoadingIndicator();
           },
         ),
       ),
