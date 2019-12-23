@@ -40,7 +40,7 @@ class UserModel extends Equatable {
     _username = json['username'];
     _fullName = json['fullName'];
     _email = json['email'];
-    _avatar = json['avatar'];
+    _avatar = json['avatar'] ?? '';
     _birthday = json['birthday'] != null
         ? DateFormat('yyyy-MM-dd').parse(json['birthday'])
         : null;

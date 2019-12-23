@@ -84,7 +84,7 @@ class DishProvider {
   Future<String> unFavourite(String token, int dishId) async {
     final data = await (GraphClient()
           ..authorization(token)
-          ..addBody(GraphQuery.favouriteDish(dishId)))
+          ..addBody(GraphQuery.unFavouriteDish(dishId)))
         .connect();
 
     return data['unFavouriteDish'];

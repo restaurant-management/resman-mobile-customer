@@ -54,6 +54,7 @@ class Repository {
   final StoreProvider _storeProvider = StoreProvider();
 
   UserModel _currentUser;
+  List<Store> _listStore;
   Store _currentStore;
   CartModel _currentCart = CartModel.empty();
   List<DailyDish> _dailyDishes;
@@ -63,6 +64,8 @@ class Repository {
   CartModel get currentCart => _currentCart;
 
   UserModel get currentUser => _currentUser;
+
+  List<Store> get listStore => _listStore;
 
   Future<String> authenticate(
       {@required String usernameOrEmail, @required String password}) async {
@@ -105,11 +108,10 @@ class Repository {
       _currentUser =
           await _userProvider.getProfileByUsername(usernameOrEmail, token);
     }
-    print(_currentUser);
   }
 
   Future<List<DailyDish>> fetchAllDishToday() async {
-    _dailyDishes = await _dailyDishProvider.getAllDishToday();
+    _dailyDishes = await _dailyDishProvider.getAllDishToday(_currentStore.id);
     return _dailyDishes;
   }
 
@@ -290,7 +292,10 @@ class Repository {
   }
 
   Future<List<Store>> getAllStore() async {
-    return await _storeProvider.getAll();
+    if (_listStore == null) {
+      _listStore = await _storeProvider.getAll();
+    }
+    return _listStore;
   }
 
   Future<Store> getStore() async {
@@ -342,5 +347,11 @@ class Repository {
 
   Future<DiscountCode> getDiscountCode(String code) async {
     return await _discountCodeProvider.getDiscountCode(code);
+  }
+
+  Future<List<DishModal>> getFavouriteDishes() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString(PrepsTokenKey);
+    return await _userProvider.getFavouriteDishes(token);
   }
 }

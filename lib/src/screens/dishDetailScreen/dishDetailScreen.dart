@@ -31,8 +31,7 @@ class DishDetailScreen extends StatefulWidget {
   final DailyDish dailyDish;
 
   const DishDetailScreen({Key key, this.dishModal, this.dailyDish})
-      : assert((dishModal == null || dailyDish == null) &&
-            (dishModal != null || dailyDish != null)),
+      : assert(dishModal != null || dailyDish != null),
         super(key: key);
 
   @override
@@ -105,7 +104,7 @@ class _DishDetailScreenState extends State<DishDetailScreen> {
             ? AddCartButton(
                 dailyDish: widget.dailyDish,
               )
-            : Container(),
+            : null,
         body: SingleChildScrollView(
           physics: BouncingScrollPhysics(),
           child: Column(

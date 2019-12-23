@@ -3,50 +3,34 @@ import 'package:flutter/material.dart';
 import 'package:resman_mobile_customer/src/blocs/cartBloc/bloc.dart';
 import 'package:resman_mobile_customer/src/blocs/cartBloc/event.dart';
 import 'package:resman_mobile_customer/src/models/dailyDish.dart';
-import 'package:resman_mobile_customer/src/models/dishModal.dart';
 import 'package:resman_mobile_customer/src/screens/dishDetailScreen/dishDetailScreen.dart';
 import 'package:resman_mobile_customer/src/widgets/cacheImage.dart';
 
-class DishItemCard extends StatefulWidget {
-  final DishModal dish;
+class TodayDishItemCard extends StatefulWidget {
   final DailyDish dailyDish;
 
-  const DishItemCard({Key key, this.dish, this.dailyDish})
-      : assert(dish != null || dailyDish != null),
-        super(key: key);
+  const TodayDishItemCard({Key key, this.dailyDish}) : super(key: key);
 
   @override
-  _DishItemCardState createState() => _DishItemCardState();
+  _TodayDishItemCardState createState() => _TodayDishItemCardState();
 }
 
-class _DishItemCardState extends State<DishItemCard> {
+class _TodayDishItemCardState extends State<TodayDishItemCard> {
   bool _loading = false;
-
-  DishModal dish;
-  DailyDish dailyDish;
-
-  @override
-  void initState() {
-    super.initState();
-    dish = widget.dish ?? widget.dailyDish.dish;
-    dailyDish = widget.dailyDish;
-  }
 
   @override
   Widget build(BuildContext context) {
     final Size contextSize = MediaQuery.of(context).size;
     final Color primaryColor = Theme.of(context).primaryColor;
-    final colorScheme = Theme.of(context).colorScheme;
-    final price = dish.price ?? dish.defaultPrice;
-    final defaultPrice = dish.defaultPrice ?? 0;
+    final price = widget.dailyDish.dish.price ?? 0;
+    final defaultPrice = widget.dailyDish.dish.defaultPrice ?? 0;
     return InkWell(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => DishDetailScreen(
-              dishModal: dish,
-              dailyDish: dailyDish,
+              dailyDish: widget.dailyDish,
             ),
           ),
         );
@@ -66,13 +50,21 @@ class _DishItemCardState extends State<DishItemCard> {
                     topLeft: Radius.circular(20)),
                 child: SizedBox(
                   height: contextSize.width / 2,
-                  child: CacheImage(
-                      dish.images.length > 0 ? dish.images[0] ?? '' : ''),
+                  child: CacheImage(widget.dailyDish.dish.images.length > 0
+                      ? widget.dailyDish.dish.images[0] ?? ''
+                      : ''),
                 ),
               ),
-              price < defaultPrice && price > 0
+              widget.dailyDish.dish.price > 0 &&
+                      widget.dailyDish.dish.price -
+                              widget.dailyDish.dish.defaultPrice <
+                          0 &&
+                      widget.dailyDish.dish.defaultPrice != 0
                   ? _buildDiscount(
-                      discount: ((price - defaultPrice) * 100 / defaultPrice)
+                      discount: ((widget.dailyDish.dish.price -
+                                  widget.dailyDish.dish.defaultPrice) *
+                              100 /
+                              widget.dailyDish.dish.defaultPrice)
                           .round()
                           .toString())
                   : Container(),
@@ -86,7 +78,7 @@ class _DishItemCardState extends State<DishItemCard> {
                   SizedBox(
                     width: contextSize.width / 2.4,
                     child: Text(
-                      dish.name,
+                      widget.dailyDish.dish.name,
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
                       style: TextStyle(
@@ -146,10 +138,10 @@ class _DishItemCardState extends State<DishItemCard> {
                       bottomLeft: Radius.circular(20),
                       bottomRight: Radius.circular(20)),
                 ),
-                onPressed: _loading || dailyDish == null
+                onPressed: _loading
                     ? null
                     : () {
-                        CartBloc().dispatch(AddDishIntoCart(dailyDish));
+                        CartBloc().dispatch(AddDishIntoCart(widget.dailyDish));
                         setState(() {
                           _loading = true;
                           Future.delayed(Duration(seconds: 1)).then((_) {
@@ -159,35 +151,30 @@ class _DishItemCardState extends State<DishItemCard> {
                           });
                         });
                       },
-                child: dailyDish == null
-                    ? Text(
-                        'Không bán hôm nay',
-                        style: TextStyle(color: colorScheme.onSurface),
-                      )
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: _loading
-                                ? CircularProgressIndicator(
-                                    strokeWidth: 1,
-                                  )
-                                : Icon(
-                                    Icons.add_shopping_cart,
-                                    color: primaryColor,
-                                  ),
-                          ),
-                          SizedBox(
-                            width: 8,
-                          ),
-                          Text(
-                            'Thêm',
-                            style: TextStyle(color: primaryColor),
-                          ),
-                        ],
-                      ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: _loading
+                          ? CircularProgressIndicator(
+                              strokeWidth: 1,
+                            )
+                          : Icon(
+                              Icons.add_shopping_cart,
+                              color: primaryColor,
+                            ),
+                    ),
+                    SizedBox(
+                      width: 8,
+                    ),
+                    Text(
+                      'Thêm',
+                      style: TextStyle(color: primaryColor),
+                    ),
+                  ],
+                ),
               ),
             )
           ],

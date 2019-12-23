@@ -5,6 +5,7 @@ import 'package:resman_mobile_customer/src/blocs/cartBloc/bloc.dart';
 import 'package:resman_mobile_customer/src/blocs/cartBloc/event.dart';
 import 'package:resman_mobile_customer/src/blocs/cartBloc/state.dart';
 import 'package:resman_mobile_customer/src/models/dailyDish.dart';
+import 'package:resman_mobile_customer/src/utils/gradientColor.dart';
 
 class AddCartButton extends StatefulWidget {
   final DailyDish dailyDish;
@@ -38,36 +39,40 @@ class _AddCartButtonState extends State<AddCartButton> {
             });
           });
       },
-      child: MaterialButton(
-        color: Theme.of(context).primaryColor,
-        onPressed: () {
-          if (!isCreating)
-            _cartBloc.dispatch(AddDishIntoCart(widget.dailyDish));
-        },
-        height: 50,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            SizedBox(
-              width: 30,
-              height: 30,
-              child: isCreating
-                  ? CircularProgressIndicator(
-                      backgroundColor: colorScheme.onPrimary,
-                    )
-                  : Icon(
-                      Icons.add_shopping_cart,
-                      color: Colors.white,
-                    ),
-            ),
-            SizedBox(
-              width: 8,
-            ),
-            Text(
-              'Thêm vào hoá đơn',
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            )
-          ],
+      child: Container(
+        decoration:
+            BoxDecoration(gradient: GradientColor.of(context).primaryGradient),
+        child: MaterialButton(
+          color: Colors.transparent,
+          onPressed: () {
+            if (!isCreating)
+              _cartBloc.dispatch(AddDishIntoCart(widget.dailyDish));
+          },
+          height: 50,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              SizedBox(
+                width: 30,
+                height: 30,
+                child: isCreating
+                    ? CircularProgressIndicator(
+                        backgroundColor: colorScheme.onPrimary,
+                      )
+                    : Icon(
+                        Icons.add_shopping_cart,
+                        color: Colors.white,
+                      ),
+              ),
+              SizedBox(
+                width: 8,
+              ),
+              Text(
+                'Thêm vào hoá đơn',
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              )
+            ],
+          ),
         ),
       ),
     );
