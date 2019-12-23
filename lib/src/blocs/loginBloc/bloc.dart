@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:meta/meta.dart';
 
 import '../../repositories/repository.dart';
 import '../authenticationBloc/bloc.dart';
@@ -11,10 +10,9 @@ import 'state.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final Repository _repository = Repository.instance;
-  final AuthenticationBloc authenticationBloc;
+  AuthenticationBloc authenticationBloc = AuthenticationBloc();
 
-  LoginBloc({@required this.authenticationBloc})
-      : assert(authenticationBloc != null);
+  LoginBloc();
 
   @override
   LoginState get initialState => LoginInitial();
@@ -30,6 +28,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         authenticationBloc.dispatch(LoggedIn(event.usernameOrEmail, token));
       } catch (e) {
         yield LoginFailure(error: e.toString());
+        yield LoginInitial();
       }
     }
 

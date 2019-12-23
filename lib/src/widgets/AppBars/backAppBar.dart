@@ -56,7 +56,7 @@ class BackAppBar extends StatelessWidget implements PreferredSizeWidget {
           : Container(),
       title: title == null
           ? Text(
-              'Res Man',
+              'Resman',
               style: TextStyle(
                   color: Theme.of(context).colorScheme.onPrimary,
                   fontSize: 40,
@@ -64,10 +64,8 @@ class BackAppBar extends StatelessWidget implements PreferredSizeWidget {
             )
           : Text(
               title,
-              style: TextStyles.h4.merge(
-                TextStyle(
-                    color: Theme.of(context).colorScheme.onPrimary,
-                    fontWeight: FontWeight.bold),
+              style: TextStyles.h2Bold.merge(
+                TextStyle(color: Theme.of(context).colorScheme.onPrimary),
               ),
             ),
       actions: actions,

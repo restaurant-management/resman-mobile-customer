@@ -10,8 +10,9 @@ import 'package:resman_mobile_customer/src/models/cartDishModel.dart';
 
 class CartItem extends StatefulWidget {
   final CartDishModel cartDish;
+  final double borderRadius;
 
-  const CartItem({Key key, @required this.cartDish})
+  const CartItem({Key key, @required this.cartDish, this.borderRadius})
       : assert(cartDish != null),
         super(key: key);
 
@@ -58,14 +59,16 @@ class _CartItemState extends State<CartItem> {
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(20)),
+        borderRadius:
+            BorderRadius.all(Radius.circular(widget.borderRadius ?? 20)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           ClipRRect(
             borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(20), topLeft: Radius.circular(20)),
+                bottomLeft: Radius.circular(widget.borderRadius ?? 20),
+                topLeft: Radius.circular(widget.borderRadius ?? 20)),
             child: BlocBuilder(
               bloc: _cartItemBloc,
               builder: (BuildContext context, state) {
@@ -88,60 +91,65 @@ class _CartItemState extends State<CartItem> {
               },
             ),
           ),
-          BlocBuilder(
-            bloc: _cartItemBloc,
-            builder: (BuildContext context, state) {
-              if (state is CartItemFetchedCartDishDetail) {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.3,
-                      child: Text(
-                        state.dailyDish.dish.name,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 2,
-                        style: TextStyle(
-                          color: primaryColor,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: BlocBuilder(
+                bloc: _cartItemBloc,
+                builder: (BuildContext context, state) {
+                  if (state is CartItemFetchedCartDishDetail) {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.3,
+                          child: Text(
+                            state.dailyDish.dish.name,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
+                            style: TextStyle(
+                              color: primaryColor,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text('${cartDish.price} VNĐ'),
+                      ],
+                    );
+                  } else if (state is CartItemToFetchDetailNotSellToDay) {
+                    _cartBloc.dispatch(RemoveDishFromCart(cartDish.dishId));
+                  }
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.3,
+                        child: Text(
+                          'Đang tải...',
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
+                          style: TextStyle(
+                            color: primaryColor,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Text('${cartDish.price} VNĐ'),
-                  ],
-                );
-              } else if (state is CartItemToFetchDetailNotSellToDay) {
-                _cartBloc.dispatch(RemoveDishFromCart(cartDish.dishId));
-              }
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.3,
-                    child: Text(
-                      'Đang tải...',
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
-                      style: TextStyle(
-                        color: primaryColor,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                      SizedBox(
+                        height: 10,
                       ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text('${cartDish.price} VNĐ'),
-                ],
-              );
-            },
+                      Text('${cartDish.price} VNĐ'),
+                    ],
+                  );
+                },
+              ),
+            ),
           ),
           Column(
             children: <Widget>[

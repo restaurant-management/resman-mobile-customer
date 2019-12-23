@@ -1,8 +1,7 @@
 import 'package:equatable/equatable.dart';
 
-import 'dishModal.dart';
-import '..//enums/dailyDishStatus.dart';
 import '../enums/daySession.dart';
+import 'dishModal.dart';
 
 class DailyDish extends Equatable {
   DateTime _day;
@@ -33,7 +32,6 @@ class DailyDish extends Equatable {
     _confirmAt = parsedJson['confirmAt'] != null
         ? DateTime.tryParse(parsedJson['confirmAt'])
         : null;
-    print(parsedJson['dish']);
     _dish = DishModal.fromJson(parsedJson['dish']);
   }
 }

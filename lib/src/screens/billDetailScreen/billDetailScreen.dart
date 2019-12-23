@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:resman_mobile_customer/src/models/billModel.dart';
+import 'package:resman_mobile_customer/src/widgets/AppBars/backAppBar.dart';
 
 import 'widgets/dishList.dart';
 import 'widgets/summaryBill.dart';
@@ -22,30 +23,14 @@ class _BillDetailScreenState extends State<BillDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios,
-            color: Theme.of(context).primaryColor,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        backgroundColor: Colors.white,
-        centerTitle: true,
-        title: Text(
-          'Danh sách món',
-          style: TextStyle(
-            color: Theme.of(context).primaryColor,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+      appBar: BackAppBar(
+        title: 'Chi tiết hóa đơn',
+        showShoppingCart: false,
       ),
       bottomNavigationBar: SizedBox(
           height: 56,
           child: SummaryBill(
-            billDetails: bill.billDetails,
+            bill: bill,
           )),
       body: SafeArea(
         child: Stack(children: <Widget>[
@@ -53,7 +38,7 @@ class _BillDetailScreenState extends State<BillDetailScreen> {
             color: Theme.of(context).colorScheme.background,
             child: DishList(
               headerHeight: 10,
-              billDetails: bill.billDetails,
+              billDetails: bill.dishes,
             ),
           ),
         ]),

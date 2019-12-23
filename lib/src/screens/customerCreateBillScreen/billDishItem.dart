@@ -1,13 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:resman_mobile_customer/src/FakeBillItem.dart';
+import 'package:resman_mobile_customer/src/models/cartDishModel.dart';
 
 class BillDishItem extends StatefulWidget {
-  final DishItem dishItem;
+  final CartDishModel dishItem;
 
   const BillDishItem({Key key, this.dishItem}) : super(key: key);
-
 
   @override
   _BillDishItemState createState() => _BillDishItemState();
@@ -21,6 +20,7 @@ class _BillDishItemState extends State<BillDishItem> {
     _count = widget.dishItem.quantity;
     super.initState();
   }
+
   void _increase() {
     setState(() {
       _count = _count + 1;
@@ -32,6 +32,7 @@ class _BillDishItemState extends State<BillDishItem> {
       _count = _count == 1 ? _count : _count - 1;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
@@ -42,18 +43,19 @@ class _BillDishItemState extends State<BillDishItem> {
       color: colorScheme.onPrimary,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
-    ),
+      ),
       child: Container(
         height: 70,
         child: Row(
           children: <Widget>[
             ClipRRect(
               borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(10), topLeft: Radius.circular(10)),
+                  bottomLeft: Radius.circular(10),
+                  topLeft: Radius.circular(10)),
               child: CachedNetworkImage(
                 placeholder: (BuildContext context, String url) => Image.asset(
                     'https://avatars1.githubusercontent.com/u/36977998?s=460&v=4'),
-                imageUrl: widget.dishItem.image,
+                imageUrl: widget.dishItem.dishId.toString(),
                 fit: BoxFit.cover,
               ),
             ),
@@ -64,7 +66,7 @@ class _BillDishItemState extends State<BillDishItem> {
                   Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: Text(
-                      widget.dishItem.name,
+                      widget.dishItem.dishId.toString(),
                       style: TextStyle(
                         color: colorScheme.onBackground,
                         fontSize: 20,
@@ -94,14 +96,10 @@ class _BillDishItemState extends State<BillDishItem> {
                   SizedBox(
                     height: 20,
                     width: 60,
-                    child: FlatButton(
+                    child: CupertinoButton(
+                      minSize: 0,
+                      padding: EdgeInsets.all(0),
                       color: Colors.white,
-                      splashColor: primaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(20),
-                        ),
-                      ),
                       child: Icon(
                         Icons.keyboard_arrow_up,
                         color: colorScheme.onBackground,
@@ -119,14 +117,10 @@ class _BillDishItemState extends State<BillDishItem> {
                   SizedBox(
                     height: 20,
                     width: 60,
-                    child: FlatButton(
+                    child: CupertinoButton(
                       color: Colors.white,
-                      splashColor: primaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                          bottomRight: Radius.circular(20),
-                        ),
-                      ),
+                      minSize: 0,
+                      padding: EdgeInsets.all(0),
                       child: Icon(
                         Icons.keyboard_arrow_down,
                         color: colorScheme.onBackground,

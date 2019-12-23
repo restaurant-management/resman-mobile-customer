@@ -1,8 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:resman_mobile_customer/src/blocs/currentUserBloc/bloc.dart';
+import 'package:resman_mobile_customer/src/blocs/currentUserBloc/state.dart';
+import 'package:resman_mobile_customer/src/models/address.dart';
 import 'package:resman_mobile_customer/src/utils/textStyles.dart';
 
-import '../../fakeAddress.dart';
+import '../errorIndicator.dart';
+import '../loadingIndicator.dart';
 import 'addressBottomSheetItem.dart';
 
 class AddressBottomSheet extends StatefulWidget {
@@ -17,13 +22,7 @@ class AddressBottomSheet extends StatefulWidget {
 }
 
 class _AddressBottomSheetState extends State<AddressBottomSheet> {
-  List<Address> addresses;
-
-  @override
-  void initState() {
-    addresses = FakeAddress.addresses;
-    super.initState();
-  }
+  CurrentUserBloc userBloc = CurrentUserBloc();
 
   @override
   Widget build(
@@ -45,9 +44,18 @@ class _AddressBottomSheetState extends State<AddressBottomSheet> {
           ),
           Container(
             height: 150,
-            child: _buildListAddress(
-              addresses,
-              widget.selectedAddress,
+            child: BlocBuilder(
+              bloc: userBloc,
+              builder: (context, state) {
+                if (state is CurrentUserProfileFetched) {
+                  return _buildListAddress(
+                      state.user.addresses, widget.selectedAddress);
+                } else if (state is CurrentUserProfileFetchFailure) {
+                  return ErrorIndicator();
+                }
+
+                return LoadingIndicator();
+              },
             ),
           ),
         ],

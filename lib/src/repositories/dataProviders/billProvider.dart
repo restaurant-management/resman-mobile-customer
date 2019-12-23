@@ -3,94 +3,54 @@ import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:resman_mobile_customer/src/models/billModel.dart';
+import 'package:resman_mobile_customer/src/models/cartDishModel.dart';
+import 'package:resman_mobile_customer/src/repositories/dataProviders/graphClient.dart';
+import 'package:resman_mobile_customer/src/repositories/dataProviders/graphQuery.dart';
 
 class BillProvider {
   static String apiUrl = 'https://restaurant-management-server.herokuapp.com';
   Client client = Client();
 
   Future<List<BillModel>> getAll(String token) async {
-    Map<String, String> headers = {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Authorization': token
-    };
-    var day = DateFormat('yyyy-MM-dd').format(DateTime.now());
-    final response = await client.get('$apiUrl/api/bills?day=$day', headers: headers);
-    if (response.statusCode == 200) {
-      List<BillModel> result = [];
-      List<dynamic> list = jsonDecode(response.body);
-      for (int i = 0; i < list.length; i++) {
-        var billModel = BillModel.fromJson(list[i]);
-        result.add(billModel);
-      }
-      return result;
-    } else {
-      String message;
-      try {
-        message = jsonDecode(response.body)['message'];
-      } catch (e) {
-        print('Error: $e');
-      }
-      if (message != null && message.isNotEmpty) throw (message);
-      throw ('Có lỗi xảy ra khi tải danh sách hoá đơn.');
-    }
+    final data = await (GraphClient()
+          ..authorization(token)
+          ..addBody(GraphQuery.deliveryBills()))
+        .connect();
+
+    return (data['deliveryBills'] as List<dynamic>)
+        .map((e) => BillModel.fromJson(e))
+        .toList();
   }
 
   Future<List<BillModel>> getAllUserBills(String token, String username) async {
-    Map<String, String> headers = {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Authorization': token
-    };
-    final response =
-        await client.get('$apiUrl/api/bills/user/$username', headers: headers);
-    if (response.statusCode == 200) {
-      List<BillModel> result = [];
-      List<dynamic> list = jsonDecode(response.body);
-      for (int i = 0; i < list.length; i++) {
-        var billModel = BillModel.fromJson(list[i]);
-        result.add(billModel);
-      }
-      return result;
-    } else {
-      String message;
-      try {
-        message = jsonDecode(response.body)['message'];
-      } catch (e) {
-        print('Error: $e');
-      }
-      if (message != null && message.isNotEmpty) throw (message);
-      throw ('Có lỗi xảy ra khi tải danh sách hoá đơn.');
-    }
+    final data = await (GraphClient()
+          ..authorization(token)
+          ..addBody(GraphQuery.deliveryBills()))
+        .connect();
+
+    return (data['deliveryBills'] as List<dynamic>)
+        .map((e) => BillModel.fromJson(e))
+        .toList();
   }
 
-  Future<BillModel> createBill(String token, List<int> dishIds,
-      List<int> quantities, List<int> prices) async {
-    Map<String, String> headers = {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Authorization': token
-    };
-    Map<String, String> body = {};
+  Future<BillModel> createBill(String token, int addressId,
+      List<CartDishModel> cartDishModels, int storeId,
+      {String discountCode = '',
+      String note = '',
+      String voucherCode = ''}) async {
+    final data = await (GraphClient()
+          ..authorization(token)
+          ..addBody(GraphQuery.createDeliveryBill(
+            addressId,
+            cartDishModels,
+            storeId,
+            discountCode: discountCode,
+            note: note,
+            voucherCode: voucherCode,
+          )))
+        .connect();
 
-    for (int i = 0; i < dishIds.length; i++) {
-      body.addAll({
-        'dishIds[$i]': dishIds[i].toString(),
-        'quantities[$i]': quantities[i].toString(),
-        'prices[$i]': prices[i].toString()
-      });
-    }
-    final response =
-        await client.post('$apiUrl/api/bills', body: body, headers: headers);
-    if (response.statusCode != 200) {
-      String message;
-      try {
-        message = jsonDecode(response.body)['message'];
-      } catch (e) {
-        print('Error: $e');
-      }
-      if (message != null && message.isNotEmpty) throw (message);
-      throw ('Tạo hoá đơn thất bại.');
-    } else {
-      return BillModel.fromJson(jsonDecode(response.body));
-    }
+    return BillModel.fromJson(data['createDeliveryBill']);
   }
 
   Future<BillModel> getBill(String token, int billId) async {

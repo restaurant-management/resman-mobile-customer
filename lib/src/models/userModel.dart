@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:intl/intl.dart';
+import 'package:resman_mobile_customer/src/models/address.dart';
+import 'package:resman_mobile_customer/src/models/voucherCode.dart';
 
 class UserModel extends Equatable {
   String _uuid;
@@ -10,6 +12,8 @@ class UserModel extends Equatable {
   DateTime _birthday;
   String _role;
   List<int> _favouriteDishes;
+  List<VoucherCode> _voucherCodes = [];
+  List<Address> _addresses = [];
 
   String get uuid => _uuid;
 
@@ -27,18 +31,28 @@ class UserModel extends Equatable {
 
   List<int> get favouriteDishes => _favouriteDishes;
 
-  UserModel.fromJson(Map<String, dynamic> parsedJson) {
-    _uuid = parsedJson['uuid'];
-    _username = parsedJson['username'];
-    _fullName = parsedJson['fullName'];
-    _email = parsedJson['email'];
-    _avatar = parsedJson['avatar'];
-    _birthday = parsedJson['birthday'] != null
-        ? DateFormat('yyyy-MM-dd').parse(parsedJson['birthday'])
+  List<VoucherCode> get voucherCodes => _voucherCodes;
+
+  List<Address> get addresses => _addresses;
+
+  UserModel.fromJson(Map<String, dynamic> json) {
+    _uuid = json['uuid'];
+    _username = json['username'];
+    _fullName = json['fullName'];
+    _email = json['email'];
+    _avatar = json['avatar'];
+    _birthday = json['birthday'] != null
+        ? DateFormat('yyyy-MM-dd').parse(json['birthday'])
         : null;
-    _role = parsedJson['role'];
-    _favouriteDishes = parsedJson['favouriteDishes'] != null
-        ? (parsedJson['favouriteDishes'] as List<dynamic>)
+    _role = json['role'];
+    _voucherCodes = (json['voucherCodes'] as List<dynamic>)
+        .map((e) => VoucherCode.fromJson(e))
+        .toList();
+    _addresses = (json['addresses'] as List<dynamic>)
+        .map((e) => Address.fromJson(e))
+        .toList();
+    _favouriteDishes = json['favouriteDishes'] != null
+        ? (json['favouriteDishes'] as List<dynamic>)
             .asMap()
             .map((index, item) {
               return MapEntry(index, int.tryParse(item['id'].toString()));

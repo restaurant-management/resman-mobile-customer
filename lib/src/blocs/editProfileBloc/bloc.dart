@@ -33,10 +33,10 @@ class EditProfileBloc extends Bloc<EditProfileBlocEvent, EditProfileBlocState> {
           event.newBirthday, event.newEmail);
       try {
         var savedUser = await _repository.saveProfile(
-            event.newFullName,
-            event.newEmail,
-            event.newBirthday,
-            newAvatarUrl ?? event.currentUser.avatar);
+            fullName: event.newFullName,
+            email: event.newEmail,
+            birthday: event.newBirthday,
+            avatar: newAvatarUrl ?? event.currentUser.avatar);
         yield EditProfileBlocSaved(savedUser);
         _currentUserBloc.dispatch(FetchCurrentUserProfile());
       } catch (e) {

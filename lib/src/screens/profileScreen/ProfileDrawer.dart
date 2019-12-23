@@ -311,9 +311,7 @@ class _ProfileDrawerState extends State<ProfileDrawer> {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => LoginScreen(
-                    authenticationBloc: widget.authenticationBloc,
-                  ),
+                  builder: (context) => LoginScreen(),
                 ));
           },
         ),
@@ -331,9 +329,7 @@ class _ProfileDrawerState extends State<ProfileDrawer> {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => LoginScreen(
-                    authenticationBloc: widget.authenticationBloc,
-                  ),
+                  builder: (context) => LoginScreen(),
                 ));
           },
         ),

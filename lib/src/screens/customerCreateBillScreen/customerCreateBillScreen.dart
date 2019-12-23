@@ -1,17 +1,28 @@
 import 'package:dashed_container/dashed_container.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:resman_mobile_customer/src/fakeAddress.dart';
-import 'package:resman_mobile_customer/src/fakeVoucher.dart';
-import 'package:resman_mobile_customer/src/screens/customerCreateBillScreen/billDishItem.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:resman_mobile_customer/src/blocs/authenticationBloc/bloc.dart';
+import 'package:resman_mobile_customer/src/blocs/authenticationBloc/state.dart';
+import 'package:resman_mobile_customer/src/blocs/cartBloc/bloc.dart';
+import 'package:resman_mobile_customer/src/blocs/cartBloc/event.dart';
+import 'package:resman_mobile_customer/src/blocs/cartBloc/state.dart';
+import 'package:resman_mobile_customer/src/blocs/loginBloc/bloc.dart';
+import 'package:resman_mobile_customer/src/models/address.dart';
+import 'package:resman_mobile_customer/src/models/cartDishModel.dart';
+import 'package:resman_mobile_customer/src/models/discountCode.dart';
+import 'package:resman_mobile_customer/src/models/voucherCode.dart';
+import 'package:resman_mobile_customer/src/screens/billDetailScreen/billDetailScreen.dart';
+import 'package:resman_mobile_customer/src/screens/cartScreen/widgets/cartItem.dart';
+import 'package:resman_mobile_customer/src/screens/customerCreateBillScreen/widgets/showAddressBottomSheet.dart';
+import 'package:resman_mobile_customer/src/screens/customerCreateBillScreen/widgets/showDiscountBottomSheet.dart';
+import 'package:resman_mobile_customer/src/screens/customerCreateBillScreen/widgets/showVoucherBottomSheet.dart';
+import 'package:resman_mobile_customer/src/screens/dishesTodayScreen/dishesTodayScreen.dart';
 import 'package:resman_mobile_customer/src/utils/gradientColor.dart';
 import 'package:resman_mobile_customer/src/utils/textStyles.dart';
 import 'package:resman_mobile_customer/src/widgets/AppBars/backAppBar.dart';
-import 'package:resman_mobile_customer/src/widgets/bottomSheet/showAddressBottomSheet.dart';
-import 'package:resman_mobile_customer/src/widgets/bottomSheet/showVoucherBottomSheet.dart';
 import 'package:resman_mobile_customer/src/widgets/drawerScaffold.dart';
-
-import '../../FakeBillItem.dart';
+import 'package:resman_mobile_customer/src/widgets/loginAlert.dart';
 
 class CustomerCreateBillScreen extends StatefulWidget {
   @override
@@ -19,20 +30,30 @@ class CustomerCreateBillScreen extends StatefulWidget {
 }
 
 class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
-  List<DishItem> dishItems;
+  String note;
+  List<CartDishModel> dishItems = [];
   Address billAddress;
-  Voucher billVoucher;
-  List<Voucher> vouchers;
-  String _value = '';
+  VoucherCode voucherCode;
+  DiscountCode discountCode;
+  double price = 0;
+  double discountPrice = 0;
   bool addSuccess = false;
-  final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  CartBloc _cartBloc = CartBloc();
+  AuthenticationBloc _authenticationBloc = AuthenticationBloc();
+  LoginBloc _loginBloc = LoginBloc();
 
   @override
   void initState() {
-    dishItems = FakeBillItem.dishItems;
-    vouchers = FakeVoucher.vouchers;
+    price = _cartBloc.currentCart.rawPrice;
+    discountPrice = _cartBloc.currentCart.realPrice;
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -41,43 +62,83 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
     return DrawerScaffold(
       key: _scaffoldKey,
       appBar: BackAppBar(
+        title: 'Tạo hóa đơn',
         showShoppingCart: false,
       ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 8),
-        child: SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
-          child: Column(
-            children: <Widget>[
-              Container(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: TextField(
-                    style: TextStyles.h5
-                        .merge(TextStyle(color: colorScheme.onBackground)),
-                    scrollPhysics: BouncingScrollPhysics(),
-                    maxLines: 3,
-                    decoration: InputDecoration(
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-                      filled: true,
-                      fillColor: colorScheme.surface,
-                      hintText: "Ghi chú",
-                      hintStyle: TextStyle(
-                        color: colorScheme.onSurface,
-                        fontSize: 16,
+      body: BlocListener(
+        bloc: _cartBloc,
+        listener: (context, state) {
+          if (state is CartBlocFetched || state is CartBlocSaved) {
+            setState(() {
+              note = _cartBloc.currentCart.note;
+              dishItems = _cartBloc.currentCart.listDishes;
+              voucherCode = _cartBloc.currentCart.voucherCode;
+              discountCode = _cartBloc.currentCart.discountCode;
+              billAddress = _cartBloc.currentCart.address;
+              price = _cartBloc.currentCart.rawPrice;
+              discountPrice = _cartBloc.currentCart.realPrice;
+            });
+          } else if (state is CartBlocCreatedBill) {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (BuildContext context) => BillDetailScreen(bill: state.bill,),
+              ),
+            );
+          } else if (state is CartBlocCreateBillFailure) {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: new Text("Lỗi khi tạo hóa đơn!"),
+                  content: new Text(state.error),
+                  actions: <Widget>[
+                    new FlatButton(
+                      child: new Text(
+                        "Oke",
+                        style: TextStyle(
+                          color: colorScheme.primary,
+                        ),
                       ),
-                      border: new OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                        borderSide: BorderSide(width: 0),
-                      ),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+          }
+        },
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 12),
+          child: SingleChildScrollView(
+            physics: BouncingScrollPhysics(),
+            child: Column(
+              children: <Widget>[
+                SizedBox(height: 10),
+                TextField(
+                  style: TextStyles.h5
+                      .merge(TextStyle(color: colorScheme.onBackground)),
+                  scrollPhysics: BouncingScrollPhysics(),
+                  maxLines: 3,
+                  decoration: InputDecoration(
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                    filled: true,
+                    fillColor: colorScheme.surface,
+                    hintText: "Ghi chú",
+                    hintStyle: TextStyle(
+                      color: colorScheme.onSurface,
+                      fontSize: 16,
+                    ),
+                    border: new OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      borderSide: BorderSide(width: 0),
                     ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Container(
+                SizedBox(height: 10),
+                Container(
                   decoration: BoxDecoration(
                     border: Border.all(
                       color: colorScheme.onSurface,
@@ -86,17 +147,10 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                     borderRadius: BorderRadius.all(Radius.circular(10)),
                   ),
                   height: 300,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                    ),
-                    child: _buildListDishItem(),
-                  ),
+                  child: _buildListDishItem(),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Container(
+                SizedBox(height: 10),
+                Container(
                   decoration: BoxDecoration(
                     border: Border.all(
                       color: colorScheme.onSurface,
@@ -114,7 +168,10 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                'Discount:',
+                                'Mã giảm giá: ' +
+                                    (discountCode != null
+                                        ? '-${discountCode.discount}%'
+                                        : ''),
                                 style: TextStyles.h3.merge(
                                   TextStyle(color: colorScheme.onBackground),
                                 ),
@@ -125,9 +182,9 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 8),
-                              child: _value.isNotEmpty
+                              child: discountCode != null
                                   ? Text(
-                                      _value,
+                                      '${discountCode.code} - ${discountCode.name}',
                                       style: TextStyles.h5.merge(
                                         TextStyle(color: colorScheme.onSurface),
                                       ),
@@ -135,7 +192,7 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                                       textAlign: TextAlign.left,
                                     )
                                   : Text(
-                                      'No discount code provided!',
+                                      'Chưa nhập mã giảm giá!',
                                       style: TextStyles.h5.merge(
                                         TextStyle(color: colorScheme.onSurface),
                                       ),
@@ -150,7 +207,7 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                         padding: const EdgeInsets.fromLTRB(0, 5, 10, 30),
                         child: CupertinoButton(
                           child: Text(
-                            'Add',
+                            discountCode != null ? 'Đổi' : 'Thêm',
                             style: TextStyles.h5.merge(
                               TextStyle(color: colorScheme.primary),
                             ),
@@ -162,17 +219,21 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                           borderRadius:
                               const BorderRadius.all(Radius.circular(10.0)),
                           onPressed: () {
-                            _showInputDiscountBottomSheet();
+                            if (_authenticationBloc.currentState
+                                is AuthenticationAuthenticated) {
+                              showInputDiscountBottomSheet(context);
+                            } else {
+                              showLoginAlert(_scaffoldKey.currentContext,
+                                  _authenticationBloc, _loginBloc);
+                            }
                           },
                         ),
                       ),
                     ],
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Container(
+                SizedBox(height: 10),
+                Container(
                   decoration: BoxDecoration(
                     border: Border.all(
                       color: colorScheme.onSurface,
@@ -193,11 +254,12 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                               child: Text(
                                 'Voucher:' +
                                     ' ' +
-                                    (billVoucher == null
+                                    (voucherCode == null
                                         ? ''
-                                        : billVoucher.value.toString() +
-                                            (billVoucher.isPercent == true
-                                                ? ' %'
+                                        : '-' +
+                                            voucherCode.value.toString() +
+                                            (voucherCode.isPercent == true
+                                                ? '%'
                                                 : ' VNĐ')),
                                 style: TextStyles.h3.merge(
                                   TextStyle(color: colorScheme.onBackground),
@@ -211,7 +273,7 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                             padding: const EdgeInsets.fromLTRB(10, 8, 10, 0),
                             child: CupertinoButton(
                               child: Text(
-                                'change',
+                                voucherCode == null ? 'Chọn' : 'Đổi',
                                 style: TextStyles.h5.merge(
                                   TextStyle(color: colorScheme.primary),
                                 ),
@@ -223,7 +285,13 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                               borderRadius:
                                   const BorderRadius.all(Radius.circular(10.0)),
                               onPressed: () {
-                                _showVoucherBottomSheet();
+                                if (_authenticationBloc.currentState
+                                    is AuthenticationAuthenticated) {
+                                  showVoucherBottomSheet(context);
+                                } else {
+                                  showLoginAlert(_scaffoldKey.currentContext,
+                                      _authenticationBloc, _loginBloc);
+                                }
                               },
                             ),
                           ),
@@ -233,9 +301,9 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                         padding: const EdgeInsets.only(
                             left: 8, top: 5, right: 8, bottom: 8),
                         child: Text(
-                          billVoucher == null
-                              ? 'No voucher is provided!'
-                              : billVoucher.name,
+                          voucherCode == null
+                              ? 'Chưa chọn voucher!'
+                              : voucherCode.name,
                           style: TextStyles.h5.merge(
                             TextStyle(color: colorScheme.onSurface),
                           ),
@@ -246,10 +314,8 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                     ],
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Container(
+                SizedBox(height: 10),
+                Container(
                   decoration: BoxDecoration(
                     border: Border.all(
                       color: colorScheme.onSurface,
@@ -267,7 +333,7 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                'Address:',
+                                'Địa chỉ:',
                                 style: TextStyles.h3.merge(
                                   TextStyle(color: colorScheme.onBackground),
                                 ),
@@ -280,7 +346,7 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                                   const EdgeInsets.symmetric(horizontal: 8),
                               child: Text(
                                 billAddress == null
-                                    ? 'No address is provided!'
+                                    ? 'Chưa chọn địa chỉ!'
                                     : billAddress.address,
                                 style: TextStyles.h5.merge(
                                   TextStyle(color: colorScheme.onSurface),
@@ -296,7 +362,7 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                         padding: const EdgeInsets.fromLTRB(0, 5, 10, 30),
                         child: CupertinoButton(
                           child: Text(
-                            'Change',
+                            billAddress == null ? 'Chọn' : 'Đổi',
                             style: TextStyles.h5.merge(
                               TextStyle(color: colorScheme.primary),
                             ),
@@ -310,223 +376,120 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                           borderRadius:
                               const BorderRadius.all(Radius.circular(10.0)),
                           onPressed: () {
-                            _showAddressBottomSheet();
+                            showAddressBottomSheet(context);
                           },
                         ),
                       ),
                     ],
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: DashedContainer(
+                SizedBox(height: 10),
+                DashedContainer(
                   dashColor: colorScheme.primary,
                   borderRadius: 15.0,
                   child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 8, horizontal: 1),
-                    child: Row(
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
                       children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(8, 0, 20, 15),
-                          child: Text(
-                            'Total amount:',
-                            style: TextStyles.h3.merge(
-                              TextStyle(color: colorScheme.onBackground),
+                        Row(
+                          children: <Widget>[
+                            Text(
+                              'Thành tiền:',
+                              style: TextStyles.h3.merge(
+                                TextStyle(color: colorScheme.onBackground),
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.left,
                             ),
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.left,
-                          ),
+                          ],
                         ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(10, 20, 10, 0),
-                            child: Text(
-                              '5000000 VNĐ',
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: <Widget>[
+                            discountPrice < price
+                                ? Text(
+                                    '${price.floor().toString()} VNĐ',
+                                    style: TextStyles.h4.merge(
+                                      TextStyle(
+                                          color: colorScheme.onSurface,
+                                          fontStyle: FontStyle.italic,
+                                          decoration:
+                                              TextDecoration.lineThrough),
+                                    ),
+                                    textAlign: TextAlign.right,
+                                  )
+                                : Container(),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              '${discountPrice.floor().toString()} VNĐ',
                               style: TextStyles.h2Bold.merge(
                                 TextStyle(color: colorScheme.onBackground),
                               ),
                               overflow: TextOverflow.ellipsis,
                               textAlign: TextAlign.right,
                             ),
-                          ),
+                          ],
                         ),
                       ],
                     ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: 8),
-                child: Container(
+                SizedBox(height: 10),
+                Container(
                   decoration: BoxDecoration(
                     gradient: GradientColor.of(context).primaryGradient,
                     borderRadius: const BorderRadius.all(Radius.circular(10.0)),
                   ),
-                  child: CupertinoButton(
-                    child: Text(
-                      'Tạo hóa đơn',
-                      style: TextStyles.h3.merge(
-                        TextStyle(color: colorScheme.onPrimary),
-                      ),
-                    ),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 40,
-                      vertical: 10,
-                    ),
-                    minSize: 0,
-                    onPressed: () {},
+                  child: BlocBuilder(
+                    bloc: _cartBloc,
+                    builder: (context, state) {
+                      return CupertinoButton(
+                        child: SizedBox(
+                          height: 20,
+                          child: state is CartBlocCreatingBill
+                              ? SizedBox(
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 1,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        colorScheme.onPrimary),
+                                  ),
+                                )
+                              : Text(
+                                  'Tạo hóa đơn',
+                                  style: TextStyles.h3.merge(
+                                    TextStyle(color: colorScheme.onPrimary),
+                                  ),
+                                ),
+                        ),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 40,
+                          vertical: 10,
+                        ),
+                        minSize: 0,
+                        onPressed: () {
+                          if (_authenticationBloc.currentState
+                              is AuthenticationAuthenticated) {
+                            _cartBloc.dispatch(CreateBillFromCart());
+                          } else {
+                            showLoginAlert(_scaffoldKey.currentContext,
+                                _authenticationBloc, _loginBloc);
+                          }
+                        },
+                      );
+                    },
                   ),
                 ),
-              ),
-              SizedBox(
-                height: 8,
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  _showInputDiscountBottomSheet() {
-    showModalBottomSheet(
-      isScrollControlled: true,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(10), topRight: Radius.circular(10)),
-      ),
-      context: context,
-      builder: (context) {
-        var colorScheme = Theme.of(context).colorScheme;
-        return Form(
-          key: _formKey,
-          child: Container(
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                vertical: 10,
-                horizontal: 10,
-              ),
-              child: Wrap(
-                runSpacing: 10,
-                alignment: WrapAlignment.center,
-                children: <Widget>[
-                  Text(
-                    'Discount code',
-                    style: TextStyles.h2Bold
-                        .merge(TextStyle(color: colorScheme.onBackground)),
-                  ),
-                  Center(
-                    child: TextFormField(
-                      decoration: InputDecoration(
-                        contentPadding: EdgeInsets.all(10),
-                        filled: true,
-                        fillColor: colorScheme.surface,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        hintText: 'Enter code here...',
-                        hintStyle: TextStyles.h5
-                            .merge(TextStyle(color: colorScheme.onSurface)),
-                      ),
-                      textAlign: TextAlign.center,
-                      validator: (value) {
-                        if (value.isEmpty) {
-                          return 'Không được để trống trường này';
-                        }
-                        if (value.length > 10) {
-                          return 'Giá trị nhập vào tối đa 10 ký tự';
-                        }
-                        return null;
-                      },
-                      onSaved: (value) {
-                        print(value);
-                        setState(() {
-                          _value = value;
-                        });
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(
-                        bottom: MediaQuery.of(context).viewInsets.bottom),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: GradientColor.of(context).primaryGradient,
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(10.0)),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: <Widget>[
-                          CupertinoButton(
-                            child: Text(
-                              'Save',
-                              style: TextStyles.h5
-                                  .merge(TextStyle(color: colorScheme.surface)),
-                            ),
-                            padding: EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 100),
-                            minSize: 0,
-                            onPressed: () {
-                              if (_formKey.currentState.validate()) {
-                                _formKey.currentState.save();
-                                Navigator.pop(context);
-                                _scaffoldKey.currentState.showSnackBar(
-                                    SnackBar(content: Text('Thêm thành công')));
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                SizedBox(height: 10)
+              ],
             ),
           ),
-        );
-      },
-    );
-  }
-
-  _showAddressBottomSheet() {
-    showModalBottomSheet(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(10), topRight: Radius.circular(10)),
-      ),
-      context: context,
-      builder: (context) {
-        return AddressBottomSheet(
-            selectedAddress: billAddress,
-            onSelect: (address) {
-              setState(() {
-                billAddress = address;
-              });
-            });
-      },
-    );
-  }
-
-  _showVoucherBottomSheet() {
-    showModalBottomSheet(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(10), topRight: Radius.circular(10)),
         ),
-        context: context,
-        builder: (context) {
-          return VoucherBottomSheet(
-            selectedVoucher: billVoucher,
-            onSelectVoucher: (voucher) {
-              setState(() {
-                billVoucher = voucher;
-              });
-            },
-          );
-        });
+      ),
+    );
   }
 
   Widget _buildListDishItem() {
@@ -540,15 +503,33 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
               SizedBox(
                 height: 8,
               ),
-              BillDishItem(
-                dishItem: dishItems[index],
+              Dismissible(
+                key: Key(index.toString()),
+                onDismissed: (direct) {
+                  onDismissed(dishItems[index].dishId);
+                },
+                child: CartItem(
+                  cartDish: dishItems[index],
+                  borderRadius: 10,
+                ),
               ),
             ],
           );
-        return BillDishItem(
-          dishItem: dishItems[index],
+        return Dismissible(
+          key: Key(index.toString()),
+          onDismissed: (direct) {
+            onDismissed(dishItems[index].dishId);
+          },
+          child: CartItem(
+            cartDish: dishItems[index],
+            borderRadius: 10,
+          ),
         );
       },
     );
+  }
+
+  void onDismissed(int dishId) {
+    _cartBloc.dispatch(RemoveDishFromCart(dishId));
   }
 }

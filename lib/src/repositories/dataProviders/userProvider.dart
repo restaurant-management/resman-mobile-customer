@@ -65,8 +65,8 @@ class UserProvider {
     }
   }
 
-  Future<UserModel> editUserProfile(String token,String email,
-      String fullName, DateTime birthday, String avatar) async {
+  Future<UserModel> editUserProfile({String token,String email,
+      String fullName, DateTime birthday, String avatar}) async {
     final data = await (GraphClient()
           ..authorization(token)
           ..addBody(GraphQuery.changeProfile(

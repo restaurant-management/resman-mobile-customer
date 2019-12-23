@@ -1,13 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gradient_widgets/gradient_widgets.dart';
 import 'package:intl/intl.dart';
-import 'package:resman_mobile_customer/src/blocs/billBloc/bloc.dart';
-import 'package:resman_mobile_customer/src/blocs/billItemBloc/bloc.dart';
-import 'package:resman_mobile_customer/src/blocs/billItemBloc/event.dart';
-import 'package:resman_mobile_customer/src/blocs/billItemBloc/state.dart';
-import 'package:resman_mobile_customer/src/enums/billStatus.dart';
 import 'package:resman_mobile_customer/src/models/billModel.dart';
 import 'package:resman_mobile_customer/src/screens/billDetailScreen/billDetailScreen.dart';
 
@@ -24,43 +18,26 @@ class BillItem extends StatefulWidget {
 
 class BillItemState extends State<BillItem> {
   BillModel get bill => widget.bill;
-  final BillItemBloc _billItemBloc = BillItemBloc();
 
   bool isUpdating = false;
 
   @override
   Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).primaryColor;
-    return BlocListener(
-      bloc: _billItemBloc,
-      listener: (BuildContext context, state) {
-        if (state is BillItemUpdatingStatus) {
-          setState(() {
-            isUpdating = true;
-          });
-          return;
-        } else if (state is BillItemUpdateStatusFailure) {
-          Scaffold.of(context).showSnackBar(SnackBar(
-            content: Text('Bạn không thể sửa trạng thái hoá đơn này.'),
-            backgroundColor: Colors.red,
-          ));
-        }
-        setState(() {
-          isUpdating = false;
-        });
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => BillDetailScreen(
+                      bill: bill,
+                    )));
       },
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => BillDetailScreen(
-                        bill: bill,
-                      )));
-        },
-        child: Card(
-          margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          child: IntrinsicWidth(
+      child: Card(
+        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        child: IntrinsicWidth(
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 10),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,7 +60,7 @@ class BillItemState extends State<BillItem> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 20, vertical: 10),
                         child: Text(
-                          'Mã: ${bill.billId}',
+                          'Mã: ${bill.id}',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 18,
@@ -102,7 +79,7 @@ class BillItemState extends State<BillItem> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 20, vertical: 10),
                         child: Text(
-                          _mapBillStatus(bill.status),
+                          _mapBillStatus(bill),
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,
@@ -132,7 +109,7 @@ class BillItemState extends State<BillItem> {
                           SizedBox(
                             height: 8,
                           ),
-                          Text(bill.billDetails.length.toString())
+                          Text(bill.dishes.length.toString())
                         ],
                       ),
                     ),
@@ -157,50 +134,18 @@ class BillItemState extends State<BillItem> {
                           SizedBox(
                             height: 8,
                           ),
-                          Text(DateFormat('hh:mm dd/MM/yyyy').format(bill.day))
+                          Text(DateFormat('hh:mm dd/MM/yyyy')
+                              .format(bill.createAt.toLocal()))
                         ],
                       ),
                     ),
                   ],
                 ),
-                _buildButton(context, bill.status)
               ],
             ),
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildButton(BuildContext context, BillStatus status) {
-    final BillBloc _billBloc = BlocProvider.of<BillBloc>(context);
-
-    if (status == BillStatus.created) {
-      return _buildButtonWidget('Xác nhận đã thanh toán', increaseWidthBy: 90,
-          onPressed: () {
-        _billItemBloc.dispatch(PayBill(bill, _billBloc));
-      });
-    } else if (status == BillStatus.paid)
-      return _buildButtonWidget('Chuẩn bị món', increaseWidthBy: 50,
-          onPressed: () {
-        _billItemBloc.dispatch(PrepareBill(bill, _billBloc));
-      });
-    else if (status == BillStatus.preparing)
-      return _buildButtonWidget('Chuẩn bị món xong', onPressed: () {
-        _billItemBloc.dispatch(FinishPrepareBill(bill, _billBloc));
-      });
-    else if (status == BillStatus.prepareDone)
-      return _buildButtonWidget('Giao tới bàn', increaseWidthBy: 50,
-          onPressed: () {
-        _billItemBloc.dispatch(DeliveryBill(bill, _billBloc));
-      });
-    else if (status == BillStatus.delivering || status == BillStatus.shipping)
-      return _buildButtonWidget('Giao đến bàn hoàn tất', increaseWidthBy: 80,
-          onPressed: () {
-        _billItemBloc.dispatch(FinishDeliveryBill(bill, _billBloc));
-      });
-    return SizedBox(
-      height: 20,
     );
   }
 
@@ -232,17 +177,15 @@ class BillItemState extends State<BillItem> {
     );
   }
 
-  String _mapBillStatus(BillStatus status) {
-    if (status == BillStatus.paid) {
+  String _mapBillStatus(BillModel bill) {
+    if (bill.collectAt != null) {
       return 'Đã thanh toán';
-    } else if (status == BillStatus.created)
-      return 'Chưa thanh toán';
-    else if (status == BillStatus.preparing)
-      return 'Đang chuẩn bị';
-    else if (status == BillStatus.prepareDone)
+    } else if (bill.shipAt != null)
+      return 'Đang giao';
+    else if (bill.preparedAt != null)
       return 'Chuẩn bị xong';
-    else if (status == BillStatus.delivering || status == BillStatus.shipping)
-      return 'Đang mang tới bàn';
-    return 'Đã hoàn thành';
+    else if (bill.prepareAt != null) return 'Đang chuẩn bị';
+
+    return 'Đã nhận hóa đơn';
   }
 }
