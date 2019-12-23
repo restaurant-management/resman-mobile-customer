@@ -7,7 +7,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:resman_mobile_customer/src/blocs/dailyDishBloc/bloc.dart';
 import 'package:resman_mobile_customer/src/blocs/dailyDishBloc/event.dart';
 import 'package:resman_mobile_customer/src/blocs/dailyDishBloc/state.dart';
-import 'package:resman_mobile_customer/src/widgets/dishList/dishesList.dart';
+import 'package:resman_mobile_customer/src/widgets/dishList/toDayDishesList.dart';
 import 'package:resman_mobile_customer/src/widgets/loadingIndicator.dart';
 
 import '../../widgets/AppBars/mainAppBar.dart';
@@ -39,10 +39,6 @@ class _DishesTodayScreenState extends State<DishesTodayScreen> {
         BlocBuilder(
           bloc: _dailyDishBloc,
           builder: (BuildContext context, state) {
-            if (state is DailyDishInitialized) {
-              _dailyDishBloc.dispatch(FetchDailyDish());
-              return LoadingIndicator();
-            }
             if (state is DailyDishFetching) return LoadingIndicator();
             if (state is DailyDishFetched) {
               if (state.listDailyDish.length == 0) {
@@ -74,7 +70,7 @@ class _DishesTodayScreenState extends State<DishesTodayScreen> {
                 onRefresh: () {
                   _dailyDishBloc.dispatch(FetchDailyDish());
                 },
-                child: DishesList(
+                child: TodayDishesList(
                   listDailyDish: state.listDailyDish,
                 ),
               );

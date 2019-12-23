@@ -26,7 +26,6 @@ class Store {
   });
 
   factory Store.fromJson(Map<String,dynamic> json){
-    print(json);
     return Store(
       id: int.tryParse(json['id']) ?? json['id'],
       name: json['name'],

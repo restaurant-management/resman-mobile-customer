@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart';
 import 'package:resman_mobile_customer/src/enums/permission.dart';
+import 'package:resman_mobile_customer/src/models/dishModal.dart';
 import 'package:resman_mobile_customer/src/repositories/dataProviders/graphClient.dart';
 import 'package:resman_mobile_customer/src/repositories/dataProviders/graphQuery.dart';
 
@@ -38,31 +39,28 @@ class UserProvider {
   Future<UserModel> getProfileByUsername(String username, String token) async {
     final response = await (GraphClient()
           ..authorization(token)
-          ..addBody(GraphQuery.me))
+          ..addBody(GraphQuery.me()))
         .connect();
 
     return UserModel.fromJson(response['meAsCustomer']);
   }
 
   Future<UserModel> getProfileByEmail(String email, String token) async {
-    Map<String, String> headers = {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Authorization': token
-    };
-    final response = await client.get('$apiUrl/api/customers/email/$email',
-        headers: headers);
-    if (response.statusCode == 200) {
-      return UserModel.fromJson(jsonDecode(response.body));
-    } else {
-      String message;
-      try {
-        message = jsonDecode(response.body)['message'];
-      } catch (e) {
-        print('Error: $e');
-      }
-      if (message != null && message.isNotEmpty) throw (message);
-      throw ('Đăng nhập thất bại.');
-    }
+    final response = await (GraphClient()
+          ..authorization(token)
+          ..addBody(GraphQuery.me()))
+        .connect();
+
+    return UserModel.fromJson(response['meAsCustomer']);
+  }
+
+  Future<List<DishModal>> getFavouriteDishes(String token) async {
+    final data = await (GraphClient()
+          ..authorization(token)
+          ..addBody(GraphQuery.favouriteDishes()))
+        .connect();
+
+    return (data['meAsCustomer']['favouriteDishes'] as List<dynamic>).map((e) => DishModal.fromJson(e)).toList();
   }
 
   Future<UserModel> editUserProfile({String token,String email,
@@ -95,7 +93,6 @@ class UserProvider {
 
     if (response.statusCode == 200) {
       var jsonPermissions = jsonDecode(response.body);
-      print(jsonPermissions);
       return Permission.fromListString(
           jsonPermissions.map<String>((e) => e.toString()).toList());
     } else {

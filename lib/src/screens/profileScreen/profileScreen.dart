@@ -1,9 +1,11 @@
 // https://www.developerlibs.com/2018/08/flutter-collapsing-toolbar-layout.html
 import 'dart:ui';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:resman_mobile_customer/src/models/userModel.dart';
+import 'package:resman_mobile_customer/src/screens/profileScreen/widgets/favouriteTab.dart';
 
 import '../../utils/outlineText.dart';
 import '../editProfileScreen/editProfileScreen.dart';
@@ -114,7 +116,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                   ProfileTab(
                     user: user,
                   ),
-                  Container(),
+                  FavouriteTab(),
                 ],
               ),
             )
@@ -129,17 +131,16 @@ class ProfileScreenState extends State<ProfileScreen> {
       child: Hero(
         tag: "avatarHero",
         child: ClipOval(
-          child: user.avatar != null
-              ? FadeInImage.assetNetwork(
-                  placeholder: 'assets/images/default-avatar.jpg',
-                  fit: BoxFit.cover,
-                  image: user.avatar,
-                )
-              : Image.asset(
-                  'assets/images/default-avatar.jpg',
-                  fit: BoxFit.cover,
-                ),
-        ),
+            child: CachedNetworkImage(
+          imageUrl: user.avatar,
+          fit: BoxFit.cover,
+          placeholder: (context, url) {
+            return Image.asset(
+              'assets/images/default-avatar.jpg',
+              fit: BoxFit.cover,
+            );
+          },
+        )),
       ),
       width: 150.0,
       height: 150.0,

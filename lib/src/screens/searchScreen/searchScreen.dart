@@ -7,7 +7,7 @@ import 'package:resman_mobile_customer/src/blocs/dailyDishBloc/bloc.dart';
 import 'package:resman_mobile_customer/src/blocs/dailyDishBloc/event.dart';
 import 'package:resman_mobile_customer/src/blocs/dailyDishBloc/state.dart';
 import 'package:resman_mobile_customer/src/models/dailyDish.dart';
-import 'package:resman_mobile_customer/src/widgets/dishList/dishesList.dart';
+import 'package:resman_mobile_customer/src/widgets/dishList/toDayDishesList.dart';
 import 'package:resman_mobile_customer/src/widgets/loadingIndicator.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -59,10 +59,6 @@ class SearchScreenState extends State<SearchScreen> {
       body: BlocBuilder(
         bloc: _dailyDishBloc,
         builder: (BuildContext context, state) {
-          if (state is DailyDishInitialized) {
-            _dailyDishBloc.dispatch(FetchDailyDish());
-            return LoadingIndicator();
-          }
           if (state is DailyDishFetching) return LoadingIndicator();
           if (state is DailyDishFetched) {
             if (state.listDailyDish.length == 0) {
@@ -125,7 +121,7 @@ class SearchScreenState extends State<SearchScreen> {
           .toList();
     }
 
-    return DishesList(
+    return TodayDishesList(
       listDailyDish: searchList,
     );
   }

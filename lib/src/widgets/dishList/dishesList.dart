@@ -1,13 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:resman_mobile_customer/src/blocs/dailyDishBloc/bloc.dart';
+import 'package:resman_mobile_customer/src/blocs/dailyDishBloc/state.dart';
 import 'package:resman_mobile_customer/src/models/dailyDish.dart';
-import 'package:resman_mobile_customer/src/widgets/dishList/dishItemCard.dart';
+import 'package:resman_mobile_customer/src/models/dishModal.dart';
+
+import 'dishItemCard.dart';
 
 class DishesList extends StatefulWidget {
-  final List<DailyDish> listDailyDish;
+  final List<DishModal> listDish;
 
-  const DishesList({Key key, @required this.listDailyDish})
-      : assert(listDailyDish != null),
+  const DishesList({Key key, @required this.listDish})
+      : assert(listDish != null),
         super(key: key);
 
   @override
@@ -15,22 +20,43 @@ class DishesList extends StatefulWidget {
 }
 
 class _DishesListState extends State<DishesList> {
-  List<DailyDish> get listDailyDish => widget.listDailyDish;
+  List<DishModal> get listDish => widget.listDish;
+
+  final DailyDishBloc dailyDishBloc = DailyDishBloc();
+
+  List<DailyDish> dailyDishes = [];
+
+  @override
+  void initState() {
+    super.initState();
+    dailyDishes = dailyDishBloc.listDailyDish;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
         color: Theme.of(context).colorScheme.background,
         child: SingleChildScrollView(
-          child: Column(
-            children: _buildRow(listDailyDish),
+          physics: BouncingScrollPhysics(),
+          child: BlocListener(
+            bloc: dailyDishBloc,
+            listener: (context, state) {
+              if (state is DailyDishFetched) {
+                setState(() {
+                  dailyDishes = state.listDailyDish;
+                });
+              }
+            },
+            child: Column(
+              children: _buildRow(listDish),
+            ),
           ),
         ));
   }
 
-  List<Widget> _buildRow(List<DailyDish> listDailyDish) {
+  List<Widget> _buildRow(List<DishModal> listDish) {
     List<Widget> rows = [];
-    for (int i = 0; i < listDailyDish.length; i += 2) {
+    for (int i = 0; i < listDish.length; i += 2) {
       rows.add(SizedBox(
         height: 10,
       ));
@@ -42,15 +68,21 @@ class _DishesListState extends State<DishesList> {
             Expanded(
               flex: 1,
               child: DishItemCard(
-                dailyDish: listDailyDish[i],
+                dish: listDish[i],
+                dailyDish: dailyDishes.firstWhere(
+                    (e) => listDish[i].dishId == e.dish.dishId,
+                    orElse: () => null),
               ),
             ),
             SizedBox(width: 10),
             Expanded(
               flex: 1,
-              child: i + 1 < listDailyDish.length
+              child: i + 1 < listDish.length
                   ? DishItemCard(
-                      dailyDish: listDailyDish[i + 1],
+                      dish: listDish[i + 1],
+                      dailyDish: dailyDishes.firstWhere(
+                          (e) => listDish[i + 1].dishId == e.dish.dishId,
+                          orElse: () => null),
                     )
                   : Container(),
             ),

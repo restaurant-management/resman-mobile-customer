@@ -2,45 +2,64 @@ import 'package:resman_mobile_customer/src/models/address.dart';
 import 'package:resman_mobile_customer/src/models/cartDishModel.dart';
 
 class GraphQuery {
-  static String me = '''
-  {
-    meAsCustomer {
-      uuid
-      username
-      settings
-      phoneNumber
-      fullName
-      email
-      birthday
-      avatar
-      addresses {
-        address
-        id
-        latitude
-        longitude
-      }
-      favouriteDishes {
-        id
-      }
-      voucherCodes {
-        code
-        isActive
-        isPercent
-        name
-        description
-        image
-        startAt
-        endAt
-        minBillPrice
-        maxPriceDiscount
-        value
-        stores {
+  static String me() {
+    return '''
+    {
+      meAsCustomer {
+        uuid
+        username
+        settings
+        phoneNumber
+        fullName
+        email
+        birthday
+        avatar
+        addresses {
+          address
           id
+          latitude
+          longitude
+        }
+        favouriteDishes {
+          id
+        }
+        voucherCodes {
+          code
+          isActive
+          isPercent
+          name
+          description
+          image
+          startAt
+          endAt
+          minBillPrice
+          maxPriceDiscount
+          value
+          stores {
+            id
+          }
         }
       }
     }
-  }
   ''';
+  }
+
+  static String favouriteDishes() {
+    return '''
+    {
+      meAsCustomer {
+        favouriteDishes {
+          id
+          name
+          description
+          images
+          defaultPrice
+          price
+        }
+      }
+    }
+    ''';
+  }
 
   static String changePassword(String oldPassword, String newPassword) {
     return '''

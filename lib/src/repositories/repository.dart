@@ -105,7 +105,6 @@ class Repository {
       _currentUser =
           await _userProvider.getProfileByUsername(usernameOrEmail, token);
     }
-    print(_currentUser);
   }
 
   Future<List<DailyDish>> fetchAllDishToday() async {
@@ -342,5 +341,11 @@ class Repository {
 
   Future<DiscountCode> getDiscountCode(String code) async {
     return await _discountCodeProvider.getDiscountCode(code);
+  }
+
+  Future<List<DishModal>> getFavouriteDishes() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString(PrepsTokenKey);
+    return await _userProvider.getFavouriteDishes(token);
   }
 }
