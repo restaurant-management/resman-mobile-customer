@@ -2,6 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:resman_mobile_customer/src/blocs/dailyDishBloc/bloc.dart';
+import 'package:resman_mobile_customer/src/blocs/dailyDishBloc/event.dart';
 import 'package:resman_mobile_customer/src/models/storeModal.dart';
 import 'package:resman_mobile_customer/src/repositories/repository.dart';
 import 'package:resman_mobile_customer/src/screens/dishesTodayScreen/dishesTodayScreen.dart';
@@ -18,6 +20,8 @@ class StoreItem extends StatelessWidget {
     return GestureDetector(
       onTap: () async {
         await Repository().selectStore(store);
+        await Repository().clearCart();
+        DailyDishBloc().dispatch(FetchDailyDish());
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (BuildContext context) => DishesTodayScreen(),

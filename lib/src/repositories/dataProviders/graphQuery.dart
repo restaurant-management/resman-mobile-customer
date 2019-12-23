@@ -300,4 +300,25 @@ class GraphQuery {
       }
     ''';
   }
+
+  static String todayDish(int storeId) {
+    final query = '''
+    {
+      todayDish(storeId: $storeId) {
+        day
+        session
+        storeId
+        dish {
+          id
+          name
+          description
+          images
+          defaultPrice
+          price
+        }
+      }
+    }
+    ''';
+    return query;
+  }
 }

@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:resman_mobile_customer/src/models/address.dart';
-import 'package:resman_mobile_customer/src/models/cartModel.dart';
 import 'package:resman_mobile_customer/src/models/dailyDish.dart';
 import 'package:resman_mobile_customer/src/models/discountCode.dart';
 import 'package:resman_mobile_customer/src/models/voucherCode.dart';
