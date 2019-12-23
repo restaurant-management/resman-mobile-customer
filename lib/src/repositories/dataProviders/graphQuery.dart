@@ -22,6 +22,22 @@ class GraphQuery {
       favouriteDishes {
         id
       }
+      voucherCodes {
+        code
+        isActive
+        isPercent
+        name
+        description
+        image
+        startAt
+        endAt
+        minBillPrice
+        maxPriceDiscount
+        value
+        stores {
+          id
+        }
+      }
     }
   }
   ''';
@@ -156,13 +172,13 @@ class GraphQuery {
 
   static String createDeliveryBill(
       int addressId, List<CartDishModel> cartDishModels, int storeId,
-      {String discountCode, String note, String voucherCode}) {
-    return '''
+      {String discountCode = '', String note = '', String voucherCode = ''}) {
+    final query = '''
     mutation {
       createDeliveryBill(
-        addressId: $addressId
+        addressId: ${addressId ?? -1}
         dishIds: ${cartDishModels.map((e) => e.dishId).toList().toString()}
-        dishNotes: ${cartDishModels.map((e) => e.note).toList().toString()}
+        dishNotes: ${cartDishModels.map((e) => e.note ?? '""').toList().toString()}
         storeId: $storeId,
         dishQuantities: ${cartDishModels.map((e) => e.quantity).toList().toString()}
         discountCode: "$discountCode"
@@ -176,6 +192,11 @@ class GraphQuery {
         shipAt
         collectAt
         collectValue
+        voucherCode
+        voucherValue
+        voucherIsPercent
+        discountCode
+        discountValue
         address
         longitude
         latitude
@@ -194,6 +215,29 @@ class GraphQuery {
         }
       }
     }
+    ''';
+    return query;
+  }
+
+  static String getDiscountCode(String code) {
+    return '''
+      {
+        getDiscountCode(code: "$code") {
+          code
+          isActive
+          name
+          description
+          startAt
+          endAt
+          minBillPrice
+          maxPriceDiscount
+          maxNumber
+          discount
+          stores {
+            id
+          }
+        }
+      }
     ''';
   }
 }

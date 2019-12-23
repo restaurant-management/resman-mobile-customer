@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:resman_mobile_customer/src/fakeAddress.dart';
+import 'package:resman_mobile_customer/src/models/address.dart';
 import 'package:resman_mobile_customer/src/utils/textStyles.dart';
 
 class AddressBottomSheetItem extends StatefulWidget {

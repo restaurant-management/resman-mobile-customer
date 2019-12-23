@@ -82,7 +82,7 @@ class CartBlocCreatedBill extends CartBlocState {
   CartBlocCreatedBill(this.bill) : super([bill]);
 
   @override
-  String toString() => 'CartBlocCreatedBill (billId: $bill)';
+  String toString() => 'CartBlocCreatedBill (billId: ${bill.id})';
 }
 
 class CartBlocCreateBillFailure extends CartBlocState {

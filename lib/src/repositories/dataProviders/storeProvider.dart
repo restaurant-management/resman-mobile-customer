@@ -4,6 +4,7 @@ import 'package:resman_mobile_customer/src/repositories/dataProviders/graphQuery
 
 class StoreProvider {
   Future<Store> fetchStore(int id) async {
+    print('Fetch store $id');
     final data =
         await (GraphClient()..addBody(GraphQuery.getStore(id))).connect();
 

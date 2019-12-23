@@ -1,75 +1,102 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:resman_mobile_customer/src/fakeVoucher.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:resman_mobile_customer/src/blocs/currentUserBloc/bloc.dart';
+import 'package:resman_mobile_customer/src/blocs/currentUserBloc/state.dart';
+import 'package:resman_mobile_customer/src/models/voucherCode.dart';
 import 'package:resman_mobile_customer/src/utils/textStyles.dart';
+import 'package:resman_mobile_customer/src/widgets/bottomSheet/voucherBottomSheetItem.dart';
+import 'package:resman_mobile_customer/src/widgets/errorIndicator.dart';
+import 'package:resman_mobile_customer/src/widgets/loadingIndicator.dart';
 
-class VoucherBottomSheetItem extends StatefulWidget {
-  final Voucher voucher;
-  final bool isBlue;
-  final Function(Voucher) onTap;
+class VoucherBottomSheet extends StatefulWidget {
+  final VoucherCode selectedVoucher;
+  final Function(VoucherCode) onSelectVoucher;
 
-  const VoucherBottomSheetItem({Key key, this.voucher, this.isBlue = false, this.onTap}) : super(key: key);
+  const VoucherBottomSheet(
+      {Key key, this.selectedVoucher, this.onSelectVoucher})
+      : super(key: key);
 
   @override
-  _VoucherBottomSheet createState() => _VoucherBottomSheet();
+  _VoucherBottomSheetState createState() => _VoucherBottomSheetState();
 }
 
-class _VoucherBottomSheet extends State<VoucherBottomSheetItem> {
+class _VoucherBottomSheetState extends State<VoucherBottomSheet> {
+  CurrentUserBloc userBloc = CurrentUserBloc();
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
-    ColorScheme colorScheme = Theme.of(context).colorScheme;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+    var colorScheme = Theme.of(context).colorScheme;
+
+    return Wrap(
+      runSpacing: 10,
+      alignment: WrapAlignment.center,
       children: <Widget>[
-        GestureDetector(
-          onTap: () {
-            widget.onTap?.call(widget.voucher);
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(width: 1, color: colorScheme.surface),
-              ),
-            ),
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-              child: Row(
-                children: <Widget>[
-                  Icon(
-                    MdiIcons.brightnessPercent,
-                    color: widget.isBlue?colorScheme.primary :colorScheme.onSurface,
-                    size: 25,
-                  ),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      widget.voucher.name,
-                      style: TextStyles.h4
-                          .merge(TextStyle(color: widget.isBlue?colorScheme.primary :colorScheme.onSurface)),
-                      softWrap: false,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  SizedBox(width: 10),
-                  Text(
-                    widget.voucher.value.toString() + '%',
-                    style: TextStyles.h5.merge(TextStyle(
-                      color: widget.isBlue?colorScheme.primary :colorScheme.onSurface,
-                    )),
-                  )
-                ],
-              ),
-            ),
+        Padding(
+          padding: const EdgeInsets.only(top: 10),
+          child: Text(
+            'Chọn voucher',
+            style: TextStyles.h2Bold
+                .merge(TextStyle(color: colorScheme.onBackground)),
+          ),
+        ),
+        Container(
+          height: 150,
+          child: BlocBuilder(
+            bloc: userBloc,
+            builder: (context, state) {
+              if (state is CurrentUserProfileFetched) {
+                return _buildListVoucher(state.user.voucherCodes, widget.selectedVoucher);
+              } else if (state is CurrentUserProfileFetchFailure) {
+                return ErrorIndicator();
+              }
+
+              return LoadingIndicator();
+            },
           ),
         ),
       ],
     );
+  }
+
+  Widget _buildListVoucher(List<VoucherCode> vouchers, [VoucherCode selected]) {
+    return ListView.builder(
+        physics: BouncingScrollPhysics(),
+        itemCount: vouchers.length,
+        itemBuilder: (BuildContext context, int index) {
+          bool isBlue = false;
+          if (vouchers[index] == selected) {
+            isBlue = true;
+          }
+          if (index == 0)
+            return Column(
+              children: <Widget>[
+                SizedBox(
+                  height: 8,
+                ),
+                VoucherBottomSheetItem(
+                  voucher: vouchers[index],
+                  isBlue: isBlue,
+                  onTap: (voucher) {
+                    widget.onSelectVoucher?.call(voucher);
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            );
+          return VoucherBottomSheetItem(
+            voucher: vouchers[index],
+            isBlue: isBlue,
+            onTap: (voucher) {
+              Navigator.pop(context);
+              widget.onSelectVoucher?.call(voucher);
+            },
+          );
+        });
   }
 }

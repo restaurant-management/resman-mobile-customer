@@ -11,11 +11,11 @@ class Address {
   double get longitude => _longitude;
   double get latitude => _latitude;
 
-  Address.fromJson(Map<String, String> json) {
+  Address.fromJson(Map<String, dynamic> json) {
     _id = int.tryParse(json['id']) ?? json['id'];
     _address = json['address'];
-    _longitude = double.tryParse(json['longitude']) ?? json['longitude'];
-    _latitude = double.tryParse(json['latitude']) ?? json['latitude'];
+    _longitude = double.tryParse(json['longitude'].toString());
+    _latitude = double.tryParse(json['latitude'].toString());
   }
 
   Address(

@@ -3,11 +3,15 @@ import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:meta/meta.dart';
+import 'package:resman_mobile_customer/src/models/address.dart';
 import 'package:resman_mobile_customer/src/models/billModel.dart';
 import 'package:resman_mobile_customer/src/models/cartDishModel.dart';
 import 'package:resman_mobile_customer/src/models/cartModel.dart';
 import 'package:resman_mobile_customer/src/models/comment.dart';
+import 'package:resman_mobile_customer/src/models/discountCode.dart';
 import 'package:resman_mobile_customer/src/models/storeModal.dart';
+import 'package:resman_mobile_customer/src/models/voucherCode.dart';
+import 'package:resman_mobile_customer/src/repositories/dataProviders/discountCodeProvider.dart';
 import 'package:resman_mobile_customer/src/repositories/dataProviders/storeProvider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -45,6 +49,7 @@ class Repository {
   final UserProvider _userProvider = UserProvider();
   final DailyDishProvider _dailyDishProvider = DailyDishProvider();
   final DishProvider _dishProvider = DishProvider();
+  final DiscountCodeProvider _discountCodeProvider = DiscountCodeProvider();
   final BillProvider _billProvider = BillProvider();
   final StoreProvider _storeProvider = StoreProvider();
 
@@ -136,12 +141,12 @@ class Repository {
 
     return await _billProvider.createBill(
       token,
-      currentCart.addressId,
+      currentCart.address?.id,
       currentCart.listDishes,
       storeId,
-      discountCode: currentCart.discountCode,
-      note: currentCart.note,
-      voucherCode: currentCart.voucherCode,
+      discountCode: currentCart.discountCode?.code ?? '',
+      note: currentCart.note ?? '',
+      voucherCode: currentCart.voucherCode?.code ?? '',
     );
   }
 
@@ -225,6 +230,18 @@ class Repository {
     }
   }
 
+  void changeVoucherCodeInCart(VoucherCode voucherCode) {
+    _currentCart.voucherCode = voucherCode;
+  }
+
+  void changeDiscountCodeInCart(DiscountCode discountCode) {
+    _currentCart.discountCode = discountCode;
+  }
+
+  void changeAddressInCart(Address address) {
+    _currentCart.address = address;
+  }
+
   Future<void> getCart() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String stringCart = prefs.getString(PrepsCart);
@@ -285,7 +302,8 @@ class Repository {
     if (_currentStore == null) {
       try {
         _currentStore = await _storeProvider.fetchStore(storeId);
-      } catch (_) {
+      } catch (e) {
+        print('Get store failed: $e');
         return null;
       }
     }
@@ -320,5 +338,9 @@ class Repository {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString(PrepsTokenKey);
     return await _dishProvider.unFavourite(token, dishId);
+  }
+
+  Future<DiscountCode> getDiscountCode(String code) async {
+    return await _discountCodeProvider.getDiscountCode(code);
   }
 }

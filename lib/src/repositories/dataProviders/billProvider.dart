@@ -68,7 +68,7 @@ class BillProvider {
 
   Future<BillModel> createBill(String token, int addressId,
       List<CartDishModel> cartDishModels, int storeId,
-      {String discountCode, String note, String voucherCode}) async {
+      {String discountCode = '', String note = '', String voucherCode = ''}) async {
     final data = await (GraphClient()
           ..authorization(token)
           ..addBody(GraphQuery.createDeliveryBill(
@@ -81,7 +81,7 @@ class BillProvider {
           )))
         .connect();
 
-    return BillModel.fromJson(jsonDecode(data['createDeliveryBill']));
+    return BillModel.fromJson(data['createDeliveryBill']);
   }
 
   Future<BillModel> getBill(String token, int billId) async {

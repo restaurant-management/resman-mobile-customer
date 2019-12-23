@@ -67,6 +67,24 @@ class CartBloc extends Bloc<CartBlocEvent, CartBlocState> {
       dispatch(SaveCartBloc());
     }
 
+    if (event is ChangeVoucherInCart) {
+      yield CartBlocSaving();
+      _repository.changeVoucherCodeInCart(event.voucherCode);
+      yield CartBlocSaved();
+    }
+
+    if (event is ChangeDiscountInCart) {
+      yield CartBlocSaving();
+      _repository.changeDiscountCodeInCart(event.discountCode);
+      yield CartBlocSaved();
+    }
+
+    if (event is ChangeAddressInCart) {
+      yield CartBlocSaving();
+      _repository.changeAddressInCart(event.address);
+      yield CartBlocSaved();
+    }
+
     if (event is CreateBillFromCart) {
       yield CartBlocCreatingBill();
       try {
@@ -76,6 +94,7 @@ class CartBloc extends Bloc<CartBlocEvent, CartBlocState> {
         yield CartBlocCreatedBill(bill);
       } catch (e) {
         yield CartBlocCreateBillFailure(e.toString());
+        yield CartBlocSaved();
       }
     }
   }

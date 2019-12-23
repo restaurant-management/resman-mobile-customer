@@ -30,6 +30,7 @@ dependencies:
   flutter_money_formatter: ^0.8.3
   like_button: ^0.1.9
   toast: ^0.1.5
+  rflutter_alert: ^1.0.3
 
 dev_dependencies:
   flutter_test:

@@ -12,11 +12,10 @@ import 'widgets/loginForm.dart';
 import 'widgets/signUpForm.dart';
 
 class LoginScreen extends StatefulWidget {
-  final AuthenticationBloc authenticationBloc;
+  final AuthenticationBloc authenticationBloc = AuthenticationBloc();
+  final bool openRegister;
 
-  const LoginScreen({Key key, @required this.authenticationBloc})
-      : assert(authenticationBloc != null),
-        super(key: key);
+  LoginScreen({Key key, this.openRegister = false}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _LoginScreenState();
@@ -27,16 +26,17 @@ class _LoginScreenState extends State<LoginScreen> {
   RegisterBloc _registerBloc;
   bool isLoading;
 
-  final PageController controller = PageController();
+  PageController controller;
   var currentPageValue = 0.0;
 
   AuthenticationBloc get _authenticationBloc => widget.authenticationBloc;
 
   @override
   void initState() {
-    _loginBloc = LoginBloc(authenticationBloc: _authenticationBloc);
+    _loginBloc = LoginBloc();
     _registerBloc = RegisterBloc();
     isLoading = false;
+    controller = PageController();
     super.initState();
   }
 
@@ -82,31 +82,57 @@ class _LoginScreenState extends State<LoginScreen> {
                       transform: Matrix4.identity()
                         ..rotateY(currentPageValue - position)
                         ..rotateZ(currentPageValue - position),
-                      child: LoginForm(
-                        loginBloc: _loginBloc,
-                        authenticationBloc: _authenticationBloc,
-                        onTap: () {
-                          controller.animateToPage(1,
-                              duration: Duration(milliseconds: 500),
-                              curve: Curves.decelerate);
-                        },
-                      ),
+                      child: widget.openRegister
+                          ? Transform(
+                              transform: Matrix4.identity()
+                                ..rotateY(currentPageValue - position)
+                                ..rotateZ(currentPageValue - position),
+                              child: SignUpForm(
+                                registerBloc: _registerBloc,
+                                onTap: () {
+                                  controller.animateToPage(
+                                    1,
+                                    duration: Duration(milliseconds: 500),
+                                    curve: Curves.decelerate,
+                                  );
+                                },
+                              ),
+                            )
+                          : LoginForm(
+                              loginBloc: _loginBloc,
+                              authenticationBloc: _authenticationBloc,
+                              onTap: () {
+                                controller.animateToPage(1,
+                                    duration: Duration(milliseconds: 500),
+                                    curve: Curves.decelerate);
+                              },
+                            ),
                     );
                   } else {
                     return Transform(
                       transform: Matrix4.identity()
                         ..rotateY(currentPageValue - position)
                         ..rotateZ(currentPageValue - position),
-                      child: SignUpForm(
-                        registerBloc: _registerBloc,
-                        onTap: () {
-                          controller.animateToPage(
-                            0,
-                            duration: Duration(milliseconds: 500),
-                            curve: Curves.decelerate,
-                          );
-                        },
-                      ),
+                      child: !widget.openRegister
+                          ? SignUpForm(
+                              registerBloc: _registerBloc,
+                              onTap: () {
+                                controller.animateToPage(
+                                  0,
+                                  duration: Duration(milliseconds: 500),
+                                  curve: Curves.decelerate,
+                                );
+                              },
+                            )
+                          : LoginForm(
+                              loginBloc: _loginBloc,
+                              authenticationBloc: _authenticationBloc,
+                              onTap: () {
+                                controller.animateToPage(0,
+                                    duration: Duration(milliseconds: 500),
+                                    curve: Curves.decelerate);
+                              },
+                            ),
                     );
                   }
                 },
