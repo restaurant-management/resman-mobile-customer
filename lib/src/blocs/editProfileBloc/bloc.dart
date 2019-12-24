@@ -36,7 +36,9 @@ class EditProfileBloc extends Bloc<EditProfileBlocEvent, EditProfileBlocState> {
             fullName: event.newFullName,
             email: event.newEmail,
             birthday: event.newBirthday,
-            avatar: newAvatarUrl ?? event.currentUser.avatar);
+            avatar: newAvatarUrl ?? event.currentUser.avatar,
+            addresses: event.newAddresses,
+            phoneNumber: event.newPhoneNumber);
         yield EditProfileBlocSaved(savedUser);
         _currentUserBloc.dispatch(FetchCurrentUserProfile());
       } catch (e) {

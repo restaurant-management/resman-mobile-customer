@@ -14,10 +14,12 @@ import 'package:resman_mobile_customer/src/blocs/currentUserBloc/state.dart';
 import 'package:resman_mobile_customer/src/blocs/editProfileBloc/bloc.dart';
 import 'package:resman_mobile_customer/src/blocs/editProfileBloc/event.dart';
 import 'package:resman_mobile_customer/src/blocs/editProfileBloc/state.dart';
+import 'package:resman_mobile_customer/src/models/address.dart';
 import 'package:resman_mobile_customer/src/models/userModel.dart';
 import 'package:resman_mobile_customer/src/utils/gradientColor.dart';
 import 'package:resman_mobile_customer/src/utils/textStyles.dart';
 import 'package:resman_mobile_customer/src/widgets/loadingIndicator.dart';
+import 'package:resman_mobile_customer/src/utils/extensions.dart';
 
 import '../../widgets/AppBars/backAppBar.dart';
 import '../../widgets/drawerScaffold.dart';
@@ -58,28 +60,31 @@ class EditProfileForm extends StatefulWidget {
 }
 
 class EditProfileState extends State<EditProfileForm> {
-  List<String> _address;
+  List<Address> _addresses;
   final _formKey = GlobalKey<FormState>();
-  String _value;
+  Address _address;
   String _name;
   String _email;
+  String _phoneNumber;
   String _oldAvatar;
   File _newAvatar;
   DateTime _birthday;
   bool isSaving;
   final _birthdayTextFieldController = new TextEditingController();
   final EditProfileBloc _editProfileBloc = EditProfileBloc();
+  var formKey = GlobalKey<FormState>();
 
   UserModel get currentUser => widget.currentUser;
 
   @override
   void initState() {
     isSaving = false;
-    _address = [];
-    _value = null;
+    _addresses = currentUser.addresses;
+    _address = null;
     _birthday = currentUser.birthday;
     _name = currentUser.fullName;
     _email = currentUser.email;
+    _phoneNumber = currentUser.phoneNumber;
     _oldAvatar = currentUser.avatar;
     if (_birthday != null)
       _birthdayTextFieldController.text =
@@ -234,6 +239,7 @@ class EditProfileState extends State<EditProfileForm> {
               ),
             ]),
             Form(
+              key: formKey,
               child: Center(
                 child: Padding(
                   padding: const EdgeInsets.all(20.0),
@@ -281,6 +287,33 @@ class EditProfileState extends State<EditProfileForm> {
                                   contentPadding:
                                       EdgeInsets.fromLTRB(20, 15, 20, 15),
                                   labelText: 'Email',
+                                  labelStyle: TextStyle(
+                                      color: colorScheme.onBackground)),
+                            ),
+                            TextFormField(
+                              initialValue: _phoneNumber,
+                              style: TextStyle(color: colorScheme.onBackground),
+                              onFieldSubmitted: (value) {
+                                setState(() {
+                                  _phoneNumber = value;
+                                });
+                              },
+                              autovalidate: true,
+                              keyboardType: TextInputType.numberWithOptions(),
+                              validator: (value) {
+                                if (value != null && !value.isPhoneNumber()) {
+                                  return 'Số điện thoại không đúng định dạng';
+                                }
+                                return null;
+                              },
+                              decoration: InputDecoration(
+                                  prefixIcon: Icon(
+                                    Icons.phone,
+                                    color: primaryColor,
+                                  ),
+                                  contentPadding:
+                                      EdgeInsets.fromLTRB(20, 15, 20, 15),
+                                  labelText: 'Số điện thoại',
                                   labelStyle: TextStyle(
                                       color: colorScheme.onBackground)),
                             ),
@@ -354,7 +387,6 @@ class EditProfileState extends State<EditProfileForm> {
                                           minSize: 0,
                                           onPressed: () {
                                             _showModalBottomSheet();
-                                            _value = '';
                                           },
                                         ),
                                       ],
@@ -385,14 +417,18 @@ class EditProfileState extends State<EditProfileForm> {
                                 end: Alignment.topLeft,
                               ),
                               callback: () {
-                                FocusScope.of(context).unfocus();
-                                if (!isSaving)
-                                  _editProfileBloc.dispatch(SaveNewProfile(
-                                      currentUser,
-                                      _name,
-                                      _birthday,
-                                      _email,
-                                      _newAvatar != null ? _newAvatar : null));
+                                if (formKey.currentState.validate()) {
+                                  FocusScope.of(context).unfocus();
+                                  if (!isSaving)
+                                    _editProfileBloc.dispatch(SaveNewProfile(
+                                        currentUser,
+                                        _name,
+                                        _birthday,
+                                        _email,
+                                        _newAvatar != null ? _newAvatar : null,
+                                        _addresses,
+                                        _phoneNumber));
+                                }
                               },
                             ),
                           ],
@@ -459,7 +495,7 @@ class EditProfileState extends State<EditProfileForm> {
                       return null;
                     },
                     onChanged: (value) {
-                      _value = value;
+                      _address = Address(address: value);
                     },
                   ),
                   Padding(
@@ -488,7 +524,7 @@ class EditProfileState extends State<EditProfileForm> {
                             onPressed: () {
                               if (_formKey.currentState.validate()) {
                                 setState(() {
-                                  _address.add(_value);
+                                  _addresses.add(_address);
                                 });
                                 Navigator.pop(context);
                               }
@@ -508,7 +544,7 @@ class EditProfileState extends State<EditProfileForm> {
   }
 
   List<Widget> _buildListAddress() {
-    return _address
+    return _addresses
         .asMap()
         .map((index, _value) => MapEntry(
             index,
@@ -518,7 +554,7 @@ class EditProfileState extends State<EditProfileForm> {
                 children: <Widget>[
                   Expanded(
                     child: Text(
-                      _value,
+                      _value.address,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -528,7 +564,7 @@ class EditProfileState extends State<EditProfileForm> {
                     child: Icon(Icons.indeterminate_check_box),
                     onPressed: () {
                       setState(() {
-                        _address.removeAt(index);
+                        _addresses.removeAt(index);
                       });
                     },
                   ),

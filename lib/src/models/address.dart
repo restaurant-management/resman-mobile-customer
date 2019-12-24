@@ -26,6 +26,24 @@ class Address {
     _latitude = latitude;
   }
 
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> json = {};
+    if (_id != null) json.addAll({'id': _id});
+    if (_address != null) json.addAll({'address': _address.toString()});
+    if (_longitude != null) json.addAll({'longitude': _longitude});
+    if (_latitude != null) json.addAll({'latitude': _latitude});
+    return json;
+  }
+
+  Map<String, dynamic> toGraphQL() {
+    final Map<String, dynamic> json = {};
+    if (_id != null) json.addAll({'id': _id});
+    if (_address != null) json.addAll({'address': '"${_address.toString()}"'});
+    if (_longitude != null) json.addAll({'longitude': _longitude});
+    if (_latitude != null) json.addAll({'latitude': _latitude});
+    return json;
+  }
+
   @override
   String toString() =>
       'Address {id: $id, longitude: $longitude, latitude: $latitude, address: $address}';
