@@ -9,6 +9,7 @@ class UserModel extends Equatable {
   String _fullName;
   String _avatar;
   String _email;
+  String _phoneNumber;
   DateTime _birthday;
   String _role;
   List<int> _favouriteDishes;
@@ -35,20 +36,23 @@ class UserModel extends Equatable {
 
   List<Address> get addresses => _addresses;
 
+  String get phoneNumber => _phoneNumber;
+
   UserModel.fromJson(Map<String, dynamic> json) {
     _uuid = json['uuid'];
     _username = json['username'];
     _fullName = json['fullName'];
     _email = json['email'];
+    _phoneNumber = json['phoneNumber'];
     _avatar = json['avatar'] ?? '';
     _birthday = json['birthday'] != null
         ? DateFormat('yyyy-MM-dd').parse(json['birthday'])
         : null;
     _role = json['role'];
-    _voucherCodes = (json['voucherCodes'] as List<dynamic>)
+    _voucherCodes = ((json['voucherCodes'] ?? []) as List<dynamic>)
         .map((e) => VoucherCode.fromJson(e))
         .toList();
-    _addresses = (json['addresses'] as List<dynamic>)
+    _addresses = ((json['addresses'] ?? []) as List<dynamic>)
         .map((e) => Address.fromJson(e))
         .toList();
     _favouriteDishes = json['favouriteDishes'] != null

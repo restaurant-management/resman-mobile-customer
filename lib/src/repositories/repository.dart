@@ -272,15 +272,23 @@ class Repository {
   }
 
   Future<UserModel> saveProfile(
-      {String fullName, String email, DateTime birthday, String avatar}) async {
+      {String fullName,
+      String email,
+      DateTime birthday,
+      String avatar,
+      String phoneNumber,
+      List<Address> addresses}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString(PrepsTokenKey);
     return await _userProvider.editUserProfile(
-        avatar: avatar,
-        birthday: birthday,
-        email: email,
-        fullName: fullName,
-        token: token);
+      avatar: avatar,
+      birthday: birthday,
+      email: email,
+      fullName: fullName,
+      token: token,
+      addresses: addresses,
+      phoneNumber: phoneNumber
+    );
   }
 
   Future changeUserPassword(

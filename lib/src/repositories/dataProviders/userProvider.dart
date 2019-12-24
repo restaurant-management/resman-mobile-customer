@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart';
 import 'package:resman_mobile_customer/src/enums/permission.dart';
+import 'package:resman_mobile_customer/src/models/address.dart';
 import 'package:resman_mobile_customer/src/models/dishModal.dart';
 import 'package:resman_mobile_customer/src/repositories/dataProviders/graphClient.dart';
 import 'package:resman_mobile_customer/src/repositories/dataProviders/graphQuery.dart';
@@ -60,15 +61,29 @@ class UserProvider {
           ..addBody(GraphQuery.favouriteDishes()))
         .connect();
 
-    return (data['meAsCustomer']['favouriteDishes'] as List<dynamic>).map((e) => DishModal.fromJson(e)).toList();
+    return (data['meAsCustomer']['favouriteDishes'] as List<dynamic>)
+        .map((e) => DishModal.fromJson(e))
+        .toList();
   }
 
-  Future<UserModel> editUserProfile({String token,String email,
-      String fullName, DateTime birthday, String avatar}) async {
+  Future<UserModel> editUserProfile(
+      {String token,
+      String email,
+      String fullName,
+      DateTime birthday,
+      String avatar,
+      String phoneNumber,
+      List<Address> addresses}) async {
     final data = await (GraphClient()
           ..authorization(token)
-          ..addBody(GraphQuery.changeProfile(
-              fullName: fullName, avatar: avatar, birthday: birthday)))
+          ..addBody(
+            GraphQuery.changeProfile(
+                fullName: fullName,
+                avatar: avatar,
+                birthday: birthday,
+                addresses: addresses,
+                phoneNumber: phoneNumber),
+          ))
         .connect();
 
     return UserModel.fromJson(data['changeProfileAsCustomer']);
