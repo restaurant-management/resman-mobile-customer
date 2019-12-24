@@ -121,18 +121,20 @@ class GraphQuery {
       String phoneNumber = '',
       DateTime birthday,
       List<Address> addresses}) {
-    return '''
+    final query = '''
     mutation {
       changeProfileAsCustomer(
         avatar: "$avatar", 
         fullName: "$fullName", 
         phoneNumber: "$phoneNumber", 
         ${birthday != null ? 'birthday: "$birthday"' : ''}
+        addresses: ${addresses.map((e) => e.toGraphQL()).toList()}
       ) {
         uuid
       }
     }
     ''';
+    return query;
   }
 
   static String createComment(int dishId, String content, [double rating]) {
