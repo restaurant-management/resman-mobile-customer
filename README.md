@@ -10,13 +10,14 @@ Cross Platform Mobile application for **Customer** of Restaurant Management proj
 ### Clone
 
 `git clone git@github.com:restaurant-management/resman-mobile-customer.git`
+
 `cd resman-mobile-customer`
 
 ### Get package
 
 `flutter pub get`
 
-### Add your google-sevices.json to android/app/
+### Add your **google-sevices.json** to **android/app/**
 
 ### Apply launcher icon
 
