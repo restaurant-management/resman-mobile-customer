@@ -81,7 +81,9 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
           } else if (state is CartBlocCreatedBill) {
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
-                builder: (BuildContext context) => BillDetailScreen(bill: state.bill,),
+                builder: (BuildContext context) => BillDetailScreen(
+                  bill: state.bill,
+                ),
               ),
             );
           } else if (state is CartBlocCreateBillFailure) {
@@ -376,7 +378,13 @@ class _CustomerCreateBillScreen extends State<CustomerCreateBillScreen> {
                           borderRadius:
                               const BorderRadius.all(Radius.circular(10.0)),
                           onPressed: () {
-                            showAddressBottomSheet(context);
+                            if (_authenticationBloc.currentState
+                                is AuthenticationAuthenticated) {
+                              showAddressBottomSheet(context);
+                            } else {
+                              showLoginAlert(_scaffoldKey.currentContext,
+                                  _authenticationBloc, _loginBloc);
+                            }
                           },
                         ),
                       ),
