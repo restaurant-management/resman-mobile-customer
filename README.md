@@ -2,6 +2,7 @@
 [![Build Status](https://github.com/restaurant-management/resman-mobile-customer/workflows/Release%20APK/badge.svg?branch=master)](https://github.com/restaurant-management/resman-mobile-customer/actions?workflow=Release%20APK)
 [![Build Status](https://github.com/restaurant-management/resman-mobile-customer/workflows/Test%20build%20APK/badge.svg?branch=master)](https://github.com/restaurant-management/resman-mobile-customer/actions?workflow=Test%20build%20APK)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Frestaurant-management%2Fresman-mobile-customer.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Frestaurant-management%2Fresman-mobile-customer?ref=badge_shield)
+[![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](https://opensource.org/licenses/MIT)
 
 Cross Platform Mobile application for **Customer** of Restaurant Management project
 
