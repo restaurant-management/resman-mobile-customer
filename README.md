@@ -28,5 +28,17 @@ Cross Platform Mobile application for **Customer** of Restaurant Management proj
 
 `flutter run`
 
+# Contributors
+Thanks for all contributors ([emoji key](https://allcontributors.org/docs/en/emoji-key)): 
+
+<!-- Contributors table START -->
+| [![Hieren Lee](https://avatars.githubusercontent.com/hienlh?s=100)<br /><sub>Hieren Lee</sub>](https://github.com/hienlh)<br />[📖](https://github.com/restaurant-management/resman-mobile-customer/blob/master/README.md "Document") [🚇](# "Infrastructure (Hosting, CI-CD, etc)") [💻](https://github.com/restaurant-management/resman-mobile-customer/commits?author=hienlh "Code") [🎨](# "Design") [🚧](# "Maintenance") [👀](https://github.com/restaurant-management/resman-mobile-customer/pulls?q=is%3Apr+reviewed-by%3Ahienlh "Reviewed Pull Requests") | [![Nguyennt98](https://avatars.githubusercontent.com/Nguyennt98?s=100)<br /><sub>Nguyennt98</sub>](https://github.com/Nguyennt98)<br />[💻](https://github.com/restaurant-management/resman-mobile-customer/commits?author=Nguyennt98 "Code") [🎨](# "Design") [🐛](https://github.com/restaurant-management/resman-mobile-customer/issues/created_by/Nguyennt98 "Bug Report") [⚠️](# "Tests") |
+| :---: | :---: |
+<!-- Contributors table END -->
+
+This project follows the [all-contributors](https://allcontributors.org) specification.
+Contributions of any kind are welcome!
+
+
 # License
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Frestaurant-management%2Fresman-mobile-customer.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Frestaurant-management%2Fresman-mobile-customer?ref=badge_large)
