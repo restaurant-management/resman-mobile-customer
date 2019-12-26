@@ -323,7 +323,9 @@ class _ProfileDrawerState extends State<ProfileDrawer> {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => LoginScreen(),
+                  builder: (context) => LoginScreen(
+                    openRegister: true,
+                  ),
                 ));
           },
         ),
