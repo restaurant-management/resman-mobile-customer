@@ -141,6 +141,10 @@ class Repository {
     final token = prefs.getString(PrepsTokenKey);
     final storeId = prefs.getInt(PrepsStoreId);
 
+    if(currentCart.address == null) {
+      throw 'Vui lòng chọn địa chỉ!';
+    }
+
     return await _billProvider.createBill(
       token,
       currentCart.address?.id,

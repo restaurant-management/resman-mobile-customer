@@ -131,7 +131,7 @@ class EditProfileState extends State<EditProfileForm> {
         if (state is EditProfileBlocSaveFailure)
           Scaffold.of(context).showSnackBar(
             SnackBar(
-              content: Text('Xảy ra lỗi trong quá trình cập nhật.'),
+              content: Text(state.error),
               backgroundColor: Colors.red,
             ),
           );
@@ -298,7 +298,6 @@ class EditProfileState extends State<EditProfileForm> {
                                   _phoneNumber = value;
                                 });
                               },
-                              autovalidate: true,
                               keyboardType: TextInputType.numberWithOptions(),
                               validator: (value) {
                                 if (value != null && !value.isPhoneNumber()) {
@@ -425,7 +424,7 @@ class EditProfileState extends State<EditProfileForm> {
                                         _name,
                                         _birthday,
                                         _email,
-                                        _newAvatar != null ? _newAvatar : null,
+                                        _newAvatar,
                                         _addresses,
                                         _phoneNumber));
                                 }

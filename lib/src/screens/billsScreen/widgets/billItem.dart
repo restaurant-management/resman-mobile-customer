@@ -71,7 +71,7 @@ class BillItemState extends State<BillItem> {
                     ),
                     Card(
                       margin: EdgeInsets.all(0),
-                      color: Colors.teal,
+                      color: _mapBillStatusToColor(bill),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.only(
                               bottomLeft: Radius.circular(20))),
@@ -100,7 +100,7 @@ class BillItemState extends State<BillItem> {
                       child: Column(
                         children: <Widget>[
                           Text(
-                            'Số món',
+                            'Tổng tiền',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: primaryColor,
@@ -109,7 +109,7 @@ class BillItemState extends State<BillItem> {
                           SizedBox(
                             height: 8,
                           ),
-                          Text(bill.dishes.length.toString())
+                          Text('${bill.realPrice.floor()} VNĐ')
                         ],
                       ),
                     ),
@@ -184,8 +184,28 @@ class BillItemState extends State<BillItem> {
       return 'Đang giao';
     else if (bill.preparedAt != null)
       return 'Chuẩn bị xong';
-    else if (bill.prepareAt != null) return 'Đang chuẩn bị';
-
+    else if (bill.prepareAt != null)
+      return 'Đang chuẩn bị';
+    else if (bill.createAt.day != DateTime.now().day &&
+        bill.createAt.month == DateTime.now().month &&
+        bill.createAt.year == DateTime.now().year) return 'Đã hết hạn';
     return 'Đã nhận hóa đơn';
+  }
+
+  Color _mapBillStatusToColor(BillModel bill) {
+    if (bill.collectAt != null) {
+      return Theme.of(context).primaryColor;
+    } else if (bill.shipAt != null)
+      return Colors.greenAccent;
+    else if (bill.preparedAt != null)
+      return Colors.teal;
+    else if (bill.prepareAt != null)
+      return Theme.of(context).colorScheme.primaryVariant;
+    else if (bill.createAt.day != DateTime.now().day &&
+        bill.createAt.month == DateTime.now().month &&
+        bill.createAt.year == DateTime.now().year)
+      return Theme.of(context).colorScheme.onSurface;
+
+    return Colors.indigo;
   }
 }

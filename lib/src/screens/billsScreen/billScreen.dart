@@ -19,7 +19,7 @@ class BillsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final BillBloc _billBloc = BillBloc(isMyBill: isMyBill);
     return Scaffold(
-      appBar: BackAppBar(showShoppingCart: false, title: 'Hóa đơn của bạn',),
+      appBar: BackAppBar(showShoppingCart: false, title: 'Hóa đơn của tôi',),
       body: Container(
         color: Theme.of(context).colorScheme.background,
         child: BlocBuilder(
@@ -28,7 +28,7 @@ class BillsScreen extends StatelessWidget {
             if (state is BillBlocFetched)
               return BlocProvider(
                 child: BillsListView(
-                  listBills: state.listBills,
+                  listBills: state.listBills.reversed.toList(),
                 ),
                 bloc: _billBloc,
               );
