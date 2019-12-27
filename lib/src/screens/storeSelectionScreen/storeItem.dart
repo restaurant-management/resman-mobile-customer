@@ -8,6 +8,7 @@ import 'package:resman_mobile_customer/src/models/storeModal.dart';
 import 'package:resman_mobile_customer/src/repositories/repository.dart';
 import 'package:resman_mobile_customer/src/screens/dishesTodayScreen/dishesTodayScreen.dart';
 import 'package:resman_mobile_customer/src/utils/textStyles.dart';
+import 'package:resman_mobile_customer/src/widgets/cacheImage.dart';
 
 class StoreItem extends StatelessWidget {
   final Store store;
@@ -83,11 +84,9 @@ class StoreItem extends StatelessWidget {
                       height: 210,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
-                        child: CachedNetworkImage(
-                          placeholder: (BuildContext context, String url) =>
-                              Image.asset('assets/images/default-avatar.jpg'),
-                          imageUrl: store.logo,
-                          fit: BoxFit.cover,
+                        child: CacheImage(
+                          store.logo,
+                          avatarPlaceholder: false,
                         ),
                       ),
                     ),
@@ -107,7 +106,9 @@ class StoreItem extends StatelessWidget {
                     ),
                     SizedBox(height: 10),
                     Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8,),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 8,
+                      ),
                       child: Row(
                         children: <Widget>[
                           Icon(

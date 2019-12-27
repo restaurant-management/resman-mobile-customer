@@ -44,9 +44,6 @@ class _LoginFormState extends State<LoginForm> {
   void initState() {
     _autoValidate = false;
     _loginBloc.dispatch(InitializeLoginForm());
-    // TODO remove in release mode
-    _usernameController.text = 'customer';
-    _passwordController.text = 'customer';
     super.initState();
   }
 

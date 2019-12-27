@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart';
 
 class GraphClient {
-  final String _apiUrl = 'https://resman-web-admin-api.herokuapp.com/graph?lng=vi';
+  final String _apiUrl = 'https://resman-web-admin-api.herokuapp.com/graph?lang=vi';
   Map<String, String> _headers;
   Map<String, String> _body;
   Client _client;

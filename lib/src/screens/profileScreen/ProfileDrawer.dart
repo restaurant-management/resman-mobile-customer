@@ -6,7 +6,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:resman_mobile_customer/src/blocs/currentUserBloc/bloc.dart';
 import 'package:resman_mobile_customer/src/blocs/currentUserBloc/event.dart';
 import 'package:resman_mobile_customer/src/blocs/currentUserBloc/state.dart';
-import 'package:resman_mobile_customer/src/enums/permission.dart';
 import 'package:resman_mobile_customer/src/models/userModel.dart';
 import 'package:resman_mobile_customer/src/repositories/repository.dart';
 import 'package:resman_mobile_customer/src/screens/storeSelectionScreen/storeSelectionScreen.dart'
@@ -53,8 +52,11 @@ class _ProfileDrawerState extends State<ProfileDrawer> {
     Repository().getStore().then((value) {
       if (value != null) {
         setState(() {
-          storeLogo = ClipOval(
-            child: CacheImage(value.logo),
+          storeLogo = SizedBox(
+            width: 48, height: 48,
+            child: ClipOval(
+              child: CacheImage(value.logo),
+            ),
           );
           storeName = value.name;
         });
