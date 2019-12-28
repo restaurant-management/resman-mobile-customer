@@ -8,16 +8,7 @@ Cross Platform Mobile application for **Customer** of Restaurant Management proj
 
 # Screen shot
 
-<img src="./documents/images/image34.png" height="300em">
-<img src="./documents/images/image35.png" height="300em">
-<img src="./documents/images/image38.png" height="300em">
-<img src="./documents/images/image13.png" height="300em">
-<img src="./documents/images/image4.png" height="300em">
-<img src="./documents/images/image10.png" height="300em">
-<img src="./documents/images/image16.png" height="300em">
-<img src="./documents/images/image36.png" height="300em">
-<img src="./documents/images/image37.png" height="300em">
-<img src="./documents/images/image14.png" height="300em">
+<img src="./documents/images/image34.png" height="300em"> <img src="./documents/images/image35.png" height="300em"> <img src="./documents/images/image38.png" height="300em"> <img src="./documents/images/image13.png" height="300em"> <img src="./documents/images/image4.png" height="300em"> <img src="./documents/images/image10.png" height="300em"> <img src="./documents/images/image16.png" height="300em"> <img src="./documents/images/image36.png" height="300em"> <img src="./documents/images/image37.png" height="300em"> <img src="./documents/images/image14.png" height="300em">
 
 # Usage
 
