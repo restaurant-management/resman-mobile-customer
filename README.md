@@ -6,6 +6,19 @@
 
 Cross Platform Mobile application for **Customer** of Restaurant Management project
 
+# Screen shot
+
+<img src="./documents/images/image34.png" height="300em">
+<img src="./documents/images/image35.png" height="300em">
+<img src="./documents/images/image38.png" height="300em">
+<img src="./documents/images/image13.png" height="300em">
+<img src="./documents/images/image4.png" height="300em">
+<img src="./documents/images/image10.png" height="300em">
+<img src="./documents/images/image16.png" height="300em">
+<img src="./documents/images/image36.png" height="300em">
+<img src="./documents/images/image37.png" height="300em">
+<img src="./documents/images/image14.png" height="300em">
+
 # Usage
 
 ### Clone
@@ -32,8 +45,9 @@ Cross Platform Mobile application for **Customer** of Restaurant Management proj
 Thanks for all contributors ([emoji key](https://allcontributors.org/docs/en/emoji-key)): 
 
 <!-- Contributors table START -->
-| [![Hieren Lee](https://avatars.githubusercontent.com/hienlh?s=100)<br /><sub>Hieren Lee</sub>](https://github.com/hienlh)<br />[📖](https://github.com/restaurant-management/resman-mobile-customer/blob/master/README.md "Document") [🚇](# "Infrastructure (Hosting, CI-CD, etc)") [💻](https://github.com/restaurant-management/resman-mobile-customer/commits?author=hienlh "Code") [🎨](# "Design") [🚧](# "Maintenance") [👀](https://github.com/restaurant-management/resman-mobile-customer/pulls?q=is%3Apr+reviewed-by%3Ahienlh "Reviewed Pull Requests") | [![Nguyennt98](https://avatars.githubusercontent.com/Nguyennt98?s=100)<br /><sub>Nguyennt98</sub>](https://github.com/Nguyennt98)<br />[💻](https://github.com/restaurant-management/resman-mobile-customer/commits?author=Nguyennt98 "Code") [🎨](# "Design") [🐛](https://github.com/restaurant-management/resman-mobile-customer/issues/created_by/Nguyennt98 "Bug Report") [⚠️](# "Tests") |
-| :---: | :---: |
+| [![Hieren Lee](https://avatars.githubusercontent.com/hienlh?s=100)<br /><sub>Hieren Lee</sub>](https://github.com/hienlh) | [![Nguyennt98](https://avatars.githubusercontent.com/Nguyennt98?s=100)<br /><sub>Nguyennt98</sub>](https://github.com/Nguyennt98) 
+| :---: | :---: | 
+[📖](https://github.com/restaurant-management/resman-mobile-customer/blob/master/README.md "Document") [🚇](# "Infrastructure (Hosting, CI-CD, etc)") [💻](https://github.com/restaurant-management/resman-mobile-customer/commits?author=hienlh "Code") [🎨](# "Design") [🚧](# "Maintenance") [👀](https://github.com/restaurant-management/resman-mobile-customer/pulls?q=is%3Apr+reviewed-by%3Ahienlh "Reviewed Pull Requests") | [💻](https://github.com/restaurant-management/resman-mobile-customer/commits?author=Nguyennt98 "Code") [🎨](# "Design") [🐛](https://github.com/restaurant-management/resman-mobile-customer/issues/created_by/Nguyennt98 "Bug Report") [⚠️](# "Tests") |
 <!-- Contributors table END -->
 
 This project follows the [all-contributors](https://allcontributors.org) specification.
