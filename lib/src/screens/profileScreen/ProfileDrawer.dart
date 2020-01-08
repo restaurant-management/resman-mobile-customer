@@ -8,6 +8,7 @@ import 'package:resman_mobile_customer/src/blocs/currentUserBloc/event.dart';
 import 'package:resman_mobile_customer/src/blocs/currentUserBloc/state.dart';
 import 'package:resman_mobile_customer/src/models/userModel.dart';
 import 'package:resman_mobile_customer/src/repositories/repository.dart';
+import 'package:resman_mobile_customer/src/screens/qrCodeScreen/qrCodeScreen.dart';
 import 'package:resman_mobile_customer/src/screens/storeSelectionScreen/storeSelectionScreen.dart'
     show StoreSelectionScreen;
 import 'package:resman_mobile_customer/src/utils/textStyles.dart';
@@ -53,7 +54,8 @@ class _ProfileDrawerState extends State<ProfileDrawer> {
       if (value != null) {
         setState(() {
           storeLogo = SizedBox(
-            width: 48, height: 48,
+            width: 48,
+            height: 48,
             child: ClipOval(
               child: CacheImage(value.logo),
             ),
@@ -227,6 +229,24 @@ class _ProfileDrawerState extends State<ProfileDrawer> {
       {bool isAuth = false}) {
     if (isAuth)
       return [
+        ListTile(
+          leading: Icon(
+            Icons.perm_device_information,
+            color: Colors.black
+          ),
+          title: Text(
+            'Mã QR của tôi',
+            style: TextStyle(color: Colors.black, fontSize: 16),
+          ),
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => QRCodeScreen(
+                          user: user,
+                        )));
+          },
+        ),
         ListTile(
           leading: Icon(
             Icons.description,
